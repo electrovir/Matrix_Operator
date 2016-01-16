@@ -18,6 +18,211 @@ function addCol() {
   COL_COUNTER++;
 }
 
+function removeCol() {
+  if (COL_COUNTER <= 2) {
+    console.warn('Tried to remove column when only 2 existed.');
+    return false;
+  }
+  clearAllButtons();
+  var rows = document.getElementsByClassName('inputs');
+  rows.forEach( function(element) {
+    element.removeChild(element.lastChild);
+  });
+  COL_COUNTER--;
+}
+
+function removeRow() {
+  if (ROW_COUNTER <= 2) {
+    console.warn('Tried to remove row when only 2 existed.');
+    return false;
+  }
+  clearAllButtons();
+  var matrix = document.getElementById('Matrix');
+  matrix.removeChild(matrix.lastChild);
+  ROW_COUNTER--;
+}
+
+function fillWithZeros() {
+  var inputs = document.getElementsByTagName('INPUT');
+  inputs.forEach( function(element) {
+    if (element.value === '') {
+      element.value = '0';
+    }
+  });
+}
+
+function equalArray(one, two) {
+  if (one.constructor !== Array || two.constructor !== Array) {
+    return false;
+  }
+  else if (one.length !== two.length) {
+    return false;
+  }
+  for(var i in one) {
+    if (one[i].constructor === Array) {
+      if (!equalArray(one[i], two[i])) {
+        return false;
+      }
+    }
+    else {
+      if (one[i] !== two[i]) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function checkMatrix() {
+  var matrix = getMatrix();
+  reduceMatrix(LAST_MATRIX);
+  
+  if (equalArray(matrix, LAST_MATRIX)) {
+    colorMatrix('good');
+  }
+  else {
+    colorMatrix('bad');
+  }
+}
+
+function colorMatrix(className) {
+  window.clearTimeout(TIMEOUT_ID);
+  styleRemove();
+  document.getElementsByTagName('INPUT').forEach( function(element) {
+    element.setAttribute('class', className);
+  });
+  document.getElementById('CheckText').removeAttribute('style');
+  TIMEOUT_ID = window.setTimeout(styleRemove, 3000);
+}
+
+function styleRemove() {
+  document.getElementById('CheckText').setAttribute('style', 'display: none;');
+  
+  document.getElementsByTagName('INPUT').forEach( function(element) {
+    element.removeAttribute('class');
+  });
+}
+
+function getMatrix() {
+  var result = [];
+  var rows = document.getElementsByClassName('row');
+  
+  rows.forEach( function(row, i) {
+    result.push([]);
+    row.getElementsByTagName('INPUT').forEach( function(element) {
+      if (element.value === '') {
+        result[i].push(0);
+      }
+      else {
+        result[i].push(toMyNumber(element.value));
+      }
+    });
+  });
+  
+  return result;
+}
+
+function vectorScale(scalar, vector) {
+  var result = [];
+  vector.forEach( function(element) {
+    result.push(scalar*element);
+  });
+  return result;
+}
+
+function matrixRowSwap(matrix, one, two) {
+  var temp = matrix[one];
+  matrix[one] = matrix[two];
+  matrix[two] = temp;
+  return matrix;
+}
+
+function vectorAdd(one, two) {
+  var result = [];
+  if (one.length !== two.length) {
+    throw new Error('Unequal length of vectors.');
+  }
+  one.forEach( function(e, i) {
+    result.push(e+two[i]);
+  });
+  return result;
+}
+
+function reduceMatrix(matrix) {
+  // col = column to put a 1 in front
+  // row = row that needs a pivot
+  for (var col = 0, row = 0; col < matrix.length; col++) {
+    // j = row that doesn't have a 0 in front, swap to row row
+    for (var j = row; j < matrix[0].length; j++) {
+      if (matrix[j][col] !== 0) {
+        matrixRowSwap(matrix, row, j);
+        matrix[row] = vectorScale(1/matrix[j][col], matrix[j]);
+        // k = row to remove numbers from  above the 1
+        for (var k = 0; k < matrix.length; k++) {
+          if (k !== row) {
+            matrix[k] = vectorAdd(vectorScale(-1*matrix[k][col], matrix[row]), matrix[k]);
+          }
+        }
+        row++;
+        break;
+      }
+    }
+  }
+  return matrix;
+}
+
+// modifies the matrix in-place
+// function toReduced(passed) {
+//   var matrix = passed;
+//     var lead = 0;
+//     for (var r = 0; r < matrix.length; r++) {
+//         if ( matrix[0].length <= lead) {
+//             return;
+//         }
+//         var i = r;
+//         while (matrix[i][lead] === 0) {
+//             i++;
+//             if (matrix.length == i) {
+//                 i = r;
+//                 lead++;
+//                 if (matrix[0].length == lead) {
+//                     return;
+//                 }
+//             }
+//         }
+//  
+//         var tmp = matrix[i];
+//         matrix[i] = matrix[r];
+//         matrix[r] = tmp;
+//  
+//         var val = matrix[r][lead];
+//         for (var j = 0; j < matrix[0].length; j++) {
+//             matrix[r][j] /= val;
+//         }
+//  
+//         for (var i = 0; i < matrix.length; i++) {
+//             if (i == r) continue;
+//             val = matrix[i][lead];
+//             for (var j = 0; j < matrix[0].length; j++) {
+//                 matrix[i][j] -= val * matrix[r][j];
+//             }
+//         }
+//         lead++;
+//     }
+//     return matrix;
+// }
+
+
+
+
+
+
+
+
+
+
+
+
 function reset() {
   document.getElementById('Matrix').innerHTML = '<div class="row" id="0"> <button class="switch" tabindex="-1" onclick="switchRows(event);"> &#8597; </button> <div class="inputs"><input><input></div> <button class="X" tabindex="-1" onclick="addThisRow(event);"> + </button> <button class="X" tabindex="-1" onclick="multiplyRow(event);"> X </button> </div> <div class="row" id="1"> <button class="switch" tabindex="-1" onclick="switchRows(event);"> &#8597; </button> <div class="inputs"><input><input></div> <button class="X" tabindex="-1" onclick="addThisRow(event);"> + </button> <button class="X" tabindex="-1" onclick="multiplyRow(event);"> X </button> </div>';
   ROW_COUNTER = 2;
@@ -291,6 +496,14 @@ function addTwoFractions(one, two) {
   return n+'/'+d;
 }
 
+function toMyNumber(input) {
+  if (!isNaN(Number(input))) {
+    return Number(input);
+  }
+  var split = input.split('/');
+  return Number(split[0])/Number(split[1]);
+}
+
 function addThisRow(event) {
   if (ADD_CLICKED === -1) {
     ADD_CLICKED = event.target.parentNode.id;
@@ -327,11 +540,26 @@ function addThisRow(event) {
   }
 }
 
+function addEventToInputs() {
+  var matrix = document.getElementById('Matrix');
+  
+  matrix.addEventListener('input', function inputChange(event) {
+    if (event.target.tagName === 'INPUT') {
+      LAST_MATRIX = getMatrix();
+    }
+  });
+}
+
 HTMLCollection.prototype.forEach = Array.prototype.forEach;
 NodeList.prototype.forEach = Array.prototype.forEach;
 
+addEventToInputs();
+
 const clicked_button_str = ' activeButton';
+var LAST_MATRIX = [];
+
 var ROW_COUNTER = 2;
 var COL_COUNTER = 2;
 var ROW_CLICKED = -1;
 var ADD_CLICKED = -1;
+var TIMEOUT_ID;
