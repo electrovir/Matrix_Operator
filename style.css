@@ -33,6 +33,15 @@ input {
   vertical-align: middle;
   /*background-color: rgba(0, 0, 255, 0.2);*/
 }
+.bad {
+  background-color: rgba(255, 0, 0, 0.3);
+}
+.good {
+  background-color: rgba(0, 255, 0, 0.3);
+}
+#CheckText {
+  color: red;
+}
 .spacer {
 	height: 0;
 	padding-top: 10%;

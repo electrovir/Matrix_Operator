@@ -36,16 +36,19 @@
         <li>
           To add a scalar multiple of a row to another, first select a row by clicing the plus sign to the right of it, then enter the scalar, and then select the row to add it to by clicking the plus sign next to it.
         </li>
+        <li>
+          Fill fills all empty spots with zeros.
+        </li>
+        <li>
+          Check lets you know if you properly row reduced the matrix (since you last typed anything in).
+        </li>
       </ul>
       <br>
     </div>
-    <br>
-    <div style="display: none;">
-      <label for="aug">
-        Augmented
-      </label>
-      <input type="checkbox" name="aug">
+    <div class="instructions" id="CheckText" style="display: none;">
+      The 'Check' function is not guaranteed to work.  I've barely tested it.  Please let me know if it's wrong.
     </div>
+    <br>
     <button onclick="addRow();" class="control">
       + Row
     </button>
@@ -57,6 +60,18 @@
     </button>
     <button onclick="showInstructions();" class="control" id="howto">
       About
+    </button><br>
+    <button onclick="removeRow();" class="control">
+      - Row
+    </button>
+    <button onclick="removeCol();" class="control">
+      - Col
+    </button>&nbsp;
+    <button onclick="fillWithZeros();" class="control">
+      Fill
+    </button>
+    <button onclick="checkMatrix();" class="control">
+      Check
     </button><br>
     <p id="multipleOfRowAdd" style="display: none;" class="small">
       Multiple of row clicked:

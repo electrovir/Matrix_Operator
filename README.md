@@ -9,3 +9,6 @@
 #### Features to add:
 
 * Variable support
+* Keyboard shortcuts
+* Even better tab support
+* Removal of columns or rows
