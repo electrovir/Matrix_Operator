@@ -88,19 +88,15 @@ function checkMatrix() {
 function colorMatrix(className) {
   window.clearTimeout(TIMEOUT_ID);
   styleRemove();
-  document.getElementsByTagName('INPUT').forEach( function(element) {
-    element.setAttribute('class', className);
-  });
-  document.getElementById('CheckText').removeAttribute('style');
+  document.getElementById('Matrix').setAttribute('class', 'matrix '+className);
+  
   TIMEOUT_ID = window.setTimeout(styleRemove, 3000);
 }
 
 function styleRemove() {
-  document.getElementById('CheckText').setAttribute('style', 'display: none;');
+  // document.getElementById('CheckText').setAttribute('style', 'display: none;');
   
-  document.getElementsByTagName('INPUT').forEach( function(element) {
-    element.removeAttribute('class');
-  });
+  document.getElementById('Matrix').setAttribute('class', 'matrix');
 }
 
 function getMatrix() {
@@ -171,57 +167,18 @@ function reduceMatrix(matrix) {
   return matrix;
 }
 
-// modifies the matrix in-place
-// function toReduced(passed) {
-//   var matrix = passed;
-//     var lead = 0;
-//     for (var r = 0; r < matrix.length; r++) {
-//         if ( matrix[0].length <= lead) {
-//             return;
-//         }
-//         var i = r;
-//         while (matrix[i][lead] === 0) {
-//             i++;
-//             if (matrix.length == i) {
-//                 i = r;
-//                 lead++;
-//                 if (matrix[0].length == lead) {
-//                     return;
-//                 }
-//             }
-//         }
-//  
-//         var tmp = matrix[i];
-//         matrix[i] = matrix[r];
-//         matrix[r] = tmp;
-//  
-//         var val = matrix[r][lead];
-//         for (var j = 0; j < matrix[0].length; j++) {
-//             matrix[r][j] /= val;
-//         }
-//  
-//         for (var i = 0; i < matrix.length; i++) {
-//             if (i == r) continue;
-//             val = matrix[i][lead];
-//             for (var j = 0; j < matrix[0].length; j++) {
-//                 matrix[i][j] -= val * matrix[r][j];
-//             }
-//         }
-//         lead++;
-//     }
-//     return matrix;
-// }
-
-
-
-
-
-
-
-
-
-
-
+function showSolved() {
+  var reduced = reduceMatrix(LAST_MATRIX);
+  
+  for (var row in reduced) {
+    var output = '';
+    for (var col in reduced[row]) {
+      output = output.concat(reduced[row][col], ', ');
+    }
+    output = output.substr(0, output.length - 2);
+    console.log(output);
+  }
+}
 
 function reset() {
   document.getElementById('Matrix').innerHTML = '<div class="row" id="0"> <button class="switch" tabindex="-1" onclick="switchRows(event);"> &#8597; </button> <div class="inputs"><input><input></div> <button class="X" tabindex="-1" onclick="addThisRow(event);"> + </button> <button class="X" tabindex="-1" onclick="multiplyRow(event);"> X </button> </div> <div class="row" id="1"> <button class="switch" tabindex="-1" onclick="switchRows(event);"> &#8597; </button> <div class="inputs"><input><input></div> <button class="X" tabindex="-1" onclick="addThisRow(event);"> + </button> <button class="X" tabindex="-1" onclick="multiplyRow(event);"> X </button> </div>';
@@ -256,9 +213,11 @@ function switchRows(event) {
     firstValues.forEach( function(element, i) {
       temp.push(element.value);
       element.value = secondValues[i].value;
+      resizeInput(element);
     });
     secondValues.forEach( function(element, i) {
       element.value = temp[i];
+      resizeInput(element);
     });
     
     document.getElementById(ROW_CLICKED).querySelector('.switch').setAttribute('class', 'switch');
@@ -310,6 +269,7 @@ function multiply(row) {
   document.getElementById(row).querySelector('.inputs').children.forEach( function(element) {
     console.log(element.value, '*', factor);
     element.value = myMultiply(element.value, factor);
+    resizeInput(element);
   });
   clearAllButtons();
 }
@@ -319,6 +279,7 @@ function hideForm() {
   document.getElementById('multipleOfRowAdd').setAttribute('style', 'display: none;');
   document.getElementById('multipleForm').setAttribute('style', 'display: none;');
   document.getElementById('multiplier').value = '';
+  document.getElementById('multiplier').removeAttribute('style');
 }
 
 function myMultiply(one, two) {
@@ -413,9 +374,11 @@ function reduce(input) {
   }
 }
 
+
 function myAdd(one, two) {
   return reduce(fractionAdd(one, two));
 }
+
 
 function fractionAdd(one, two) {
   if (String(one).indexOf('/') === -1 && String(two).indexOf('/') === -1) {
@@ -480,16 +443,18 @@ function fractionAdd(one, two) {
 }
 
 // return a string
+// finds a gcd for the final result
 function addTwoFractions(one, two) {
   function hcf(a, b) {
     if (b === 0) {
         return a;
     }
     return hcf(b, a%b);
-}
+  }
   function lcm(a,b) {
     return a*b/(hcf(a,b));
-}
+  }
+  
   var d = lcm(one[1], two[1]);
   var n = one[0]*(d/one[1])+two[0]*(d/two[1]);
   
@@ -533,6 +498,7 @@ function addThisRow(event) {
     console.dir(temp);
     final.forEach( function(element, i) {
       element.value = myAdd(element.value, temp[i]);
+      resizeInput(element);
     });
     
     document.getElementById('go').removeAttribute('style');
@@ -542,13 +508,35 @@ function addThisRow(event) {
 
 function addEventToInputs() {
   var matrix = document.getElementById('Matrix');
+  var multiplier = document.getElementById('multiplier');
   
   matrix.addEventListener('input', function inputChange(event) {
     if (event.target.tagName === 'INPUT') {
       LAST_MATRIX = getMatrix();
+      resizeInput(event.target);
     }
   });
+  
+  multiplier.addEventListener('input', function resizeMultiplier(event) {
+    resizeInput(event.target);
+  });
 }
+
+function resizeInput(input) {
+  if (input.value.length > 12) {
+    input.setAttribute('style', 'font-size: 0.5em; word-break: break-word;');
+  }
+  else if (input.value.length > 3) {
+    input.setAttribute('style', 'font-size: 1em; word-break: break-word;');
+  }
+  else {
+    input.removeAttribute('style');
+  }
+}
+
+//
+//
+//
 
 HTMLCollection.prototype.forEach = Array.prototype.forEach;
 NodeList.prototype.forEach = Array.prototype.forEach;

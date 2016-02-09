@@ -12,14 +12,14 @@ input[type=number]::-webkit-inner-spin-button {
   margin: 0;
 }
 input {
-  outline: none;
   border: 2px solid #CCC;
-  -moz-appearance:textfield;
-  -webkit-appearance: none;
-  width: 2em;
-  font: 2em helvetica;
+  width: 128px;
+  height: 74px;
+  font-family: helvetica;
+  font-size: 2em;
   text-align: center;
   margin: 0 4px;
+  padding: 4px;
 }
 .view {
   /*background-color: rgba(0, 255, 0, 0.1);*/
@@ -33,10 +33,10 @@ input {
   vertical-align: middle;
   /*background-color: rgba(0, 0, 255, 0.2);*/
 }
-.bad {
+.bad input {
   background-color: rgba(255, 0, 0, 0.3);
 }
-.good {
+.good input {
   background-color: rgba(0, 255, 0, 0.3);
 }
 #CheckText {
@@ -77,6 +77,9 @@ button:active {
   margin: 0;
   padding: 0;
   display: inline-block;
+}
+.inputs input {
+  float: left;
 }
 .activeButton {
   border: 3px #3CF solid;
