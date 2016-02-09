@@ -10,5 +10,4 @@
 
 * Variable support
 * Keyboard shortcuts
-* Even better tab support
-* Removal of columns or rows
+* Even better support for tab keying
