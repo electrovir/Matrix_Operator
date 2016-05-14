@@ -1,7 +1,7 @@
 /*
   accepted action types:
     change original matrix      expects a matrix in action.matrix
-    update current matrix       expects a matrix in action.matrix
+    update current matrix       expects a matrix in action.matrix         
     undo
     redo
     add row
@@ -12,94 +12,164 @@
     clear
 */
 
+/*
+  action {
+    type: STRING,
+    -- THE FOLLOWING ARE OPTIONAL --
+    loaded_data: {
+      start_index:
+      timeline:
+    },
+    
+    matrix: [],
+    
+    operation: 
+  }
+*/
 
 
 function matrixAppReducer(state, action) {
-  // var newState = JSON.parse(JSON.stringify(state));  for performance concerns, not doing this
-  var newState = state;
-  newState.lastState = state;
-  newState.action_history.push(action);
+  // this following line MIGHT have big performance consequences
+  var newState = JSON.parse(JSON.stringify(state));
+  // var newState = state;
+  // NOTE: I am using JSON here because object.assign doesn't do a deep copy, which completely wrecks its usefulness in using it to make a copy...
   
-  function changeCurrentMatrix(newMatrix) {
+  // ============================================
+  // ACCEPTED ARGUMENT LIST
+  // current_matrix, original_matrix, operation
+  //        OR
+  // original_matrix, operation
+  //        OR
+  // orginal_matrix
+  // ============================================
+  function addNewMoment() {
+    var moment = {};
     
-    newState.matrix_history.push(state.current_matrix);
-    newState.current_matrix = newMatrix;
+    switch(Object.keys(arguments).length) {
+      case 3:
+        moment.original_matrix = arguments[1];
+        moment.operation = arguments[2];
+      break;
+      case 2:
+        moment.original_matrix = arguments[0];
+        moment.operation = arguments[1];
+      break;
+      case 1:
+        moment.original_matrix = arguments[0];
+        moment.operation = null;
+      break;
+      default:
+        throw new Error('Invalid arguments.');
+    }
+    
+    moment.current_matrix = arguments[0];
+    newState.timeline.push(moment);
+    newState.index++;
   }
   
   switch(action.type) {
-    
-    case 'load timeline':
-      newState.timeline = action.timeline;
-    break;
-    
-    case 'change original matrix':
-      newState.matrix_history.push(state.current_matrix);
-      newState.original_matrix = action.matrix;
-    break;
-    
-    case 'update current matrix':
-      changeCurrentMatrix(action.matrix);
-    break;
-    
-    //    history -> current -> future
+  
+    // =====================
+    // HISTORY MANIPULATION
+    // =====================
     case 'undo':
-      newState.matrix_future.unshift(state.current_matrix);
-      newState.current_matrix = newState.matrix_history.pop();
+      if ( state.index <= 0 ) {
+        throw new Error('Tried to undo when there was nothing to undo.');
+      }
+      newState.index--;
     break;
     
-    //    history <- current <- future
     case 'redo':
-      changeCurrentMatrix(newState.matrix_future.shift());
+      if ( state.index === state.timeline.length - 1 ) {
+        throw new Error('Tried to redo when there was nothing to redo.');
+      }
+      newState.index++;
+    break;
+    
+    // ================================================
+    // CURRENT MATRIX and ORIGINAL MATRIX MANIPULATION
+    // ================================================
+    case 'load':
+      newState = replaceProperties(action.loaded_data);
+      newState.index = action.loaded_data.start_index;
+    break;
+    
+    case 'typing input':
+      addNewMoment( action.matrix );
     break;
     
     case 'add row':
-      var new_row = [];
-      for (var i in newState.current_matrix[0]) {
-        new_row.push('0');
-      }
-      changeCurrentMatrix( newState.current_matrix.concat(new_row) );
+      var current = newState.getCurrent();
+      
+      var new_row = createBlankMatrix(1, current[0].length);
+      addNewMoment( current.concat(new_row) );
     break;
     
     case 'remove row':
-      if (newState.current_matrix.length > 2) {
-        changeCurrentMatrix( newState.current_matrix.pop() );
+      var current = newState.getCurrent();
+      if (current.length <= 2) {
+        throw new Error('Tried to remove a row when only two rows were present.');
       }
+      
+      addNewMoment( current.pop() );
     break;
     
     case 'add column':
-      newState.current_matrix.forEach( function(row) {
+      var new_matrix = newState.getCurrent();
+      
+      new_matrix.forEach( function(row) {
         row.push('0');
       });
-      changeCurrentMatrix( newState.current_matrix );
+      
+      addNewMoment( new_matrix );
     break;
     
     case 'remove column':
-      newState.current_matrix.forEach( function(row) {
+      var new_matrix = newState.getCurrent();
+      if (new_matrix[0].length <= 2) {
+        throw new Error('Tried to remove a column when only two columns were present.');
+      }
+      
+      new_matrix.forEach( function(row) {
         row.pop();
       });
-      changeCurrentMatrix( newState.current_matrix );
+      
+      addNewMoment( new_matrix );
     break;
     
-    case: 'reset to original':
-      changeCurrentMatrix( state.original_matrix );
+    case 'reset to original':
+      addNewMoment( newState[index].original_matrix );
     break;
     
-    case: 'clear':
-      changeCurrentMatrix( createBlankMatrix(state.current_matrix.length, state.current_matrix[0].length) );
+    case 'clear':
+      addNewMoment( createBlankMatrix(state.current_matrix.length, state.current_matrix[0].length) );
     break;
+    
+    // ================================================
+    // CURRENT MATRIX MANIPULATION only AKA operations
+    // ================================================
+    
+    // TODO: add 'swap rows', 'multiply row', and 'add row multiple' cases here
+    
+    
+    
     
     default:
       newState = {
-        timeline: [], //array of moments
-        index: -1,    //index of current moment
-        
-        
-      }
+        timeline: [],               // array of moments
+        index: -1,                  // index of current moment
+        start_index: 0,             // this is needed for loading timelines from local storage
+        getCurrent: function() {
+          return Object.assign( {}, timeline[index].current_matrix);
+        },
+        current_operation: null     // corresponds to what operation is currently taking place (dramatically affects the view)
+      };
     break;
   }
   
   return newState;
 }
+
 
 function createBlankMatrix(rowCount, columnCount) {
   var new_matrix = Array(rowCount);
@@ -108,4 +178,25 @@ function createBlankMatrix(rowCount, columnCount) {
   });
   
   return new_matrix;
+}
+
+/**
+ * This takes two objects and overrides all the properties in the first
+ * object with the properties in the second.  It leaves all properties
+ * from the first intact that aren't present in the second.
+ * 
+ * @param oldObject   The object with propeties to be overriden
+ * @param newData     The object with new properties
+ * @return            The resulting object with replacements made
+ * 
+*/
+function replaceProperties(oldObject, newData) {
+  
+  var returnObject = Object.assign({}, oldObject); //NOTE: this doesn't do a deep copy
+  for (var key in newData) {
+    if (newData.hasOwnProperty(key) && oldObject.hasOwnProperty(key)) {
+      returnObject[key] = newData[key];
+    }
+  }
+  return returnObject;
 }
