@@ -26,12 +26,16 @@ input {
   text-align: center;
 	margin: 0 auto;
 	width: 100%;
-  /*max-width: 95%;*/
 }
 .matrix {
   display: inline-block;
   vertical-align: middle;
   /*background-color: rgba(0, 0, 255, 0.2);*/
+}
+.top-buttons {
+  overflow: auto;
+  width: 800px;
+  margin: 0 auto;
 }
 .bad input {
   background-color: rgba(255, 0, 0, 0.3);
@@ -42,16 +46,25 @@ input {
 #CheckText {
   color: red;
 }
+.control {
+  min-width: 90px;
+}
+.left-buttons {
+  float: left;
+}
+.right-buttons {
+  float: right;
+}
 .spacer {
 	height: 0;
-	padding-top: 10%;
+	padding-top: 5%;
 }
 button {
   height: 1.5em;
   font: .7em helvetica;
   font-weight: bold;
   margin: 1.2em 1em;
-  background-color: #CCC;
+  background-color: #EEE;
   border: 3px solid #002;
   border-radius: 5px;
 }

@@ -144,7 +144,18 @@ function vectorAdd(one, two) {
   return result;
 }
 
-function reduceMatrix(matrix) {
+// creates a copy of the matrix
+// I use this really just to prevent mutation of the original matrix
+function copyMatrix(matrix) {
+  var copyMatrix = [];
+  for (var k in matrix) {
+    copyMatrix[k] = matrix[k].filter(function() {return true;});
+  }
+  return copyMatrix;
+}
+
+function reduceMatrix(passedMatrix) {
+  var matrix = copyMatrix(passedMatrix);
   // col = column to put a 1 in front
   // row = row that needs a pivot
   for (var col = 0, row = 0; col < matrix.length; col++) {
@@ -170,21 +181,42 @@ function reduceMatrix(matrix) {
 function showSolved() {
   var reduced = reduceMatrix(LAST_MATRIX);
   
-  for (var row in reduced) {
-    var output = '';
-    for (var col in reduced[row]) {
-      output = output.concat(reduced[row][col], ', ');
+  printMatrix(reduced);
+}
+
+function printMatrix(matrix) {
+  console.log(matrixToString(matrix));
+}
+
+function matrixToString(matrix) {
+  var output = '';
+  for (var row in matrix) {
+    for (var col in matrix[row]) {
+      output = output.concat(matrix[row][col], ', ');
     }
-    output = output.substr(0, output.length - 2);
-    console.log(output);
-  }
+    output = output.substr(0, output.length - 2).concat('\n');
+  } 
+  return output;
 }
 
 function reset() {
+  var inputs = document.getElementById('Matrix').getElementsByTagName('Input');
+  var i = 0;
+  for (var row in LAST_MATRIX) {
+    for (var col in LAST_MATRIX[row]) {
+      inputs[i].value = LAST_MATRIX[row][col];
+      i++;
+    }
+  }
+  resizeAllInputs();
+}
+
+function clear() {
   document.getElementById('Matrix').innerHTML = '<div class="row" id="0"> <button class="switch" tabindex="-1" onclick="switchRows(event);"> &#8597; </button> <div class="inputs"><input><input></div> <button class="X" tabindex="-1" onclick="addThisRow(event);"> + </button> <button class="X" tabindex="-1" onclick="multiplyRow(event);"> X </button> </div> <div class="row" id="1"> <button class="switch" tabindex="-1" onclick="switchRows(event);"> &#8597; </button> <div class="inputs"><input><input></div> <button class="X" tabindex="-1" onclick="addThisRow(event);"> + </button> <button class="X" tabindex="-1" onclick="multiplyRow(event);"> X </button> </div>';
   ROW_COUNTER = 2;
   COL_COUNTER = 2;
   ROW_CLICKED = -1;
+  resizeAllInputs();
   clearAllButtons();
 }
 
@@ -200,7 +232,6 @@ function showInstructions() {
 
 function switchRows(event) {
   if (ROW_CLICKED === -1) {
-    console.log('stuff');
     clearAllButtons();
     ROW_CLICKED = event.target.parentNode.id;
     activateButton(event.target);
@@ -254,7 +285,6 @@ function multiplyRow(event) {
 }
 
 function showMultipleForm(input) {
-  console.log('derp');
   document.getElementById('multipleForm').setAttribute('style', 'display: auto;');
   
   document.getElementById('multipleForm').setAttribute('action', 'javascript:' + input);
@@ -267,7 +297,6 @@ function multiply(row) {
     factor = 1;
   }
   document.getElementById(row).querySelector('.inputs').children.forEach( function(element) {
-    console.log(element.value, '*', factor);
     element.value = myMultiply(element.value, factor);
     resizeInput(element);
   });
@@ -469,6 +498,71 @@ function toMyNumber(input) {
   return Number(split[0])/Number(split[1]);
 }
 
+function calculateDeterminant(matrix) {
+  if (matrix.length != matrix[0].length) {
+    throw new Error('Not a square matrix!');
+  }
+  if (matrix.length === 2 && matrix[0].length === 2) {
+    return (matrix[0][0]*matrix[1][1])-(matrix[0][1]*matrix[1][0]);
+  }
+  var result = 0;
+  var cofactorMultiplier = -1;
+  for (var row in matrix) {
+    cofactorMultiplier *= -1;
+    result += cofactorMultiplier*matrix[row][0]*calculateDeterminant(subMatrix(matrix, [row], [0]));
+  }
+  return result;
+}
+
+function setMatrix() {
+  return [
+    [
+      8, 7, 5
+    ],
+    [
+      4, 6, 8
+    ],
+    [
+      9, 7, 6
+    ]
+  ];
+}
+
+// subMatrix(matrix,[rows to remove],[columns to remove])
+//  TODO: alter this to allow 2+ dimensions
+function subMatrix(matrix, rows, cols) {
+  if (matrix.constructor !== Array) {
+    throw new Error('Invalid matrix, must be an array of arrays.');
+  }
+  if (rows.length === 0 && cols.length === 0) {
+    return matrix;
+  }
+  
+  // create a copy of the matrix for mutation
+  
+  var subMatrix = copyMatrix(matrix);
+  
+  // sort arrays
+  function compareNumbers(a,b) {
+    return a-b;
+  }
+  rows.sort(compareNumbers);
+  cols.sort(compareNumbers);
+  
+  // remove rows
+  for (var i in rows) {
+    subMatrix.splice(rows[i]-i,1);
+  }
+  // remove columns
+  for (var j in cols) {
+    for (var row in subMatrix) {
+      subMatrix[row].splice(cols[j],1);
+    }
+  }
+  
+  return subMatrix;
+}
+
 function addThisRow(event) {
   if (ADD_CLICKED === -1) {
     ADD_CLICKED = event.target.parentNode.id;
@@ -523,6 +617,7 @@ function addEventToInputs() {
 }
 
 function resizeInput(input) {
+  console.log('resize one:', input);
   if (input.value.length > 12) {
     input.setAttribute('style', 'font-size: 0.5em; word-break: break-word;');
   }
@@ -534,6 +629,28 @@ function resizeInput(input) {
   }
 }
 
+function resizeAllInputs() {
+  var inputs = document.getElementsByTagName('Input');
+  console.log('all inputs:', inputs);
+  inputs.forEach(function(element) {
+    resizeInput(element);
+  });
+}
+
+function randomMatrix() {
+  var inputs = document.getElementById('Matrix').getElementsByTagName('Input');
+  for (var i in inputs) {
+    if (getRandomInt(0,2) < 2) {
+      inputs[i].value = getRandomInt(0,10);
+    }
+    else {
+      inputs[i].value = getRandomInt(0, 100);
+    }
+  }
+  
+}
+
+
 //
 //
 //
@@ -542,6 +659,9 @@ HTMLCollection.prototype.forEach = Array.prototype.forEach;
 NodeList.prototype.forEach = Array.prototype.forEach;
 
 addEventToInputs();
+
+calculateDeterminant(setMatrix());
+
 
 const clicked_button_str = ' activeButton';
 var LAST_MATRIX = [];
