@@ -1,73 +1,49 @@
 /*
-  accepted action types:
-    change original matrix      expects a matrix in action.matrix
-    update current matrix       expects a matrix in action.matrix         
-    undo
-    redo
-    add row
-    remove row
-    add column
-    remove column
-    reset to original
-    clear
-*/
-
-/*
   action {
     type: STRING,
-    -- THE FOLLOWING ARE OPTIONAL --
+    
+    -- THE FOLLOWING ARE OPTIONAL AS NEEDED--
+    
     loaded_data: {
-      start_index:
+      start_index: ,
       timeline:
     },
     
     matrix: [],
     
-    operation: 
+    operands: {
+      row1_index: ,
+      row2_index: ,
+      multiple:
+    }
   }
 */
 
 
 function matrixAppReducer(state, action) {
-  // this following line MIGHT have big performance consequences
-  var newState = JSON.parse(JSON.stringify(state));
-  // var newState = state;
-  // NOTE: I am using JSON here because object.assign doesn't do a deep copy, which completely wrecks its usefulness in using it to make a copy...
   
-  // ============================================
-  // ACCEPTED ARGUMENT LIST
-  // current_matrix, original_matrix, operation
-  //        OR
-  // original_matrix, operation
-  //        OR
-  // orginal_matrix
-  // ============================================
-  function addNewMoment() {
-    var moment = {};
+  function addNewMoment(passedState, passed_orig_matrix, passed_cur_matrix, passed_action) {
     
-    switch(Object.keys(arguments).length) {
-      case 3:
-        moment.original_matrix = arguments[1];
-        moment.operation = arguments[2];
-      break;
-      case 2:
-        moment.original_matrix = arguments[0];
-        moment.operation = arguments[1];
-      break;
-      case 1:
-        moment.original_matrix = arguments[0];
-        moment.operation = null;
-      break;
-      default:
-        throw new Error('Invalid arguments.');
-    }
+    var moment = {
+      original_matrix: passed_orig_matrix,
+      current_matrix: passed_cur_matrix,
+      operation: {
+        type: passed_action.type,
+        operands: passed_action.operands
+      }
+    };
     
-    moment.current_matrix = arguments[0];
-    newState.timeline.push(moment);
-    newState.index++;
+    passedState.timeline.push(moment);
+    passedState.index++;
+    
+    return passedState;
   }
   
-  switch(action.type) {
+  // NOTE: This following line MIGHT have big performance consequences.
+  // NOTE: I am using JSON here because object.assign doesn't do a deep copy, which completely wrecks its usefulness in using it to make a copy...
+  var newState = JSON.parse( JSON.stringify(state) );
+  
+  switch( action.type ) {
   
     // =====================
     // HISTORY MANIPULATION
@@ -87,36 +63,36 @@ function matrixAppReducer(state, action) {
     break;
     
     // ================================================
-    // CURRENT MATRIX and ORIGINAL MATRIX MANIPULATION
+    // LOAD
     // ================================================
     case 'load':
-      newState = replaceProperties(action.loaded_data);
+      newState = replaceProperties( newState, action.loaded_data );
+      // set the point in the timeline at which the app will start
       newState.index = action.loaded_data.start_index;
     break;
     
+    // ================================================
+    // MATRIX MUTATIONS
+    // ================================================
     case 'typing input':
-      addNewMoment( action.matrix );
+      newState = addNewMoment( newState, action.matrix, action.matrix, null );
     break;
     
     case 'add row':
       var current = newState.getCurrent();
-      
       var new_row = createBlankMatrix(1, current[0].length);
-      addNewMoment( current.concat(new_row) );
+      newState = addNewMoment( current.concat(new_row) );
     break;
     
     case 'remove row':
-      var current = newState.getCurrent();
-      if (current.length <= 2) {
+      if ( newState.getCurrent().length <= 2 ) {
         throw new Error('Tried to remove a row when only two rows were present.');
       }
-      
-      addNewMoment( current.pop() );
+      addNewMoment( newState.getCurrent().pop() );
     break;
     
     case 'add column':
       var new_matrix = newState.getCurrent();
-      
       new_matrix.forEach( function(row) {
         row.push('0');
       });
@@ -126,7 +102,7 @@ function matrixAppReducer(state, action) {
     
     case 'remove column':
       var new_matrix = newState.getCurrent();
-      if (new_matrix[0].length <= 2) {
+      if ( new_matrix[0].length <= 2) {
         throw new Error('Tried to remove a column when only two columns were present.');
       }
       
@@ -134,33 +110,64 @@ function matrixAppReducer(state, action) {
         row.pop();
       });
       
-      addNewMoment( new_matrix );
+      newState = addNewMoment( newState, new_matrix );
     break;
     
     case 'reset to original':
-      addNewMoment( newState[index].original_matrix );
+      newState = addNewMoment( newState, [index].original_matrix );
     break;
     
     case 'clear':
-      addNewMoment( createBlankMatrix(state.current_matrix.length, state.current_matrix[0].length) );
+      newState = addNewMoment( newState, createBlankMatrix(state.current_matrix.length, state.current_matrix[0].length) );
     break;
     
     // ================================================
-    // CURRENT MATRIX MANIPULATION only AKA operations
+    // MATRIX OPERATIONS
     // ================================================
+
+    case 'swap rows':
+      var new_matrix = newState.getCurrent();
+      
+      var temp_row = new_matrix[action.operands.row1_index];
+      new_matrix[action.operands.row1_index] = new_matrix[action.operands.row2_index];
+      new_matrix[action.operands.row2_index] = temp_row;
+      
+      newState = addNewMoment( newState, newState.getOriginal(), new_matrix, action );
+    break;
     
-    // TODO: add 'swap rows', 'multiply row', and 'add row multiple' cases here
+    case 'multiply row':
+      var new_matrix = newState.getCurrent();
+      var multiple = action.operands.multiple;
+      
+      new_matrix[action.operands.row1_index].forEach( function(e, i) {
+        e = matrixItemMultiply( e, multiple );
+      });
+      
+      newState = addNewMoment( newState, newState.getOriginal(), new_matrix, action );
+    break;
     
-    
+    case 'add row multiple':
+      var new_matrix = newState.getCurrent();
+      var multiple = action.operands.multiple;
+      
+      new_matrix[action.operands.row2_index].forEach( function(e, i) {
+        e = matrixItemAdd( matrixItemMultiply( new_matrix[action.operands.row1_index][i], multiple ),  e );
+      });
+      
+      newState = addNewMoment( newState, newState.getOriginal(), new_matrix, action );
+    break;
     
     
     default:
       newState = {
         timeline: [],               // array of moments
         index: -1,                  // index of current moment
-        start_index: 0,             // this is needed for loading timelines from local storage
+        start_index: 0,             // this is needed to know at what index to start on after loading a timeline from local storage
         getCurrent: function() {
-          return Object.assign( {}, timeline[index].current_matrix);
+          return JSON.parse( JSON.stringify( timeline[index].current_matrix ) );
+        },
+        getOriginal: function() {
+          return JSON.parse( JSON.stringify( timeline[index].original_matrix ) );
         },
         current_operation: null     // corresponds to what operation is currently taking place (dramatically affects the view)
       };

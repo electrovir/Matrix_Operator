@@ -76,7 +76,7 @@ function viewController() {
         return false;
       }
       input_rows.forEach( function(row) {
-        row.removeChild(row.lastChild));
+        row.removeChild(row.lastChild);
       });
       
     }
