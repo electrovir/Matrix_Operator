@@ -1,0 +1,143 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<dom-module id="matrix-row-controls">
+  <template>
+    
+    <style>
+      :host {
+        position: relative;        
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none;   /* Chrome/Safari/Opera */
+        -khtml-user-select: none;    /* Konqueror */
+        -moz-user-select: none;      /* Firefox */
+        -ms-user-select: none;       /* Internet Explorer/Edge */
+        user-select: none;           /* Non-prefixed version, currently
+                                        not supported by any browser */
+      }
+      
+      .three-lines {
+        display: inline-block;
+        background-color: yellow;
+        position: relative;
+        box-sizing: border-box;
+        
+        padding: 0 5px;
+        margin: 0;
+        border: 2px solid black;
+        border-radius: 3px;
+        cursor: pointer;
+        z-index: 99;
+        
+      }
+      
+      .three-lines:active {
+        background-color: orange;
+      }
+      
+      .operations > div:active {
+        background-color: red;
+      }
+      
+      .operations {
+        background-color: white;
+        display: flex;
+        
+        visibility: hidden;
+        width: 0;
+        
+        overflow: hidden;
+        box-sizing: border-box;
+        
+        position: absolute;
+        left: 20px;
+        top: -2px;
+        
+        border: 2px solid black;
+        border-top-right-radius: 3px;
+        border-bottom-right-radius: 3px;
+        
+        justify-content: space-between;
+        
+        height: 22px;
+        transition: all 2s ease-in-out;
+      }
+      
+      .operations > *:first-child {
+        padding-left: 2px;
+      }
+      
+      .operations > * + * {
+        border-left: solid 1px lightgray;
+      }
+      
+      .operations > div {
+        box-sizing: border-box;
+        flex-grow: 1;
+        text-align: center;
+      }
+      
+      .operations img {
+        padding-top: 4px;
+        height: 10px;
+      }
+      
+      
+    </style>
+    
+    <div on-tap = "handleTap" class = "three-lines" >
+      <svg width="10" height="10">
+        <path d="M0,1 10,1" stroke="#000" stroke-width="2"/>
+        <path d="M0,5 10,5" stroke="#000" stroke-width="2"/>
+        <path d="M0,9 10,9" stroke="#000" stroke-width="2"/>
+      </svg>
+    </div>
+    
+    <div class="operations">
+      <div>
+        <img src="scroll.svg">
+      </div>
+      <div>
+        <img src="cross.svg">
+      </div>
+      <div>
+        <img src="plus.svg">
+      </div>
+    </div>
+    
+    
+  </template>
+  
+  <script>
+    Polymer ({
+      is: 'matrix-row-controls',
+      
+      properties: {
+        isHidden: {
+          type: Boolean,
+          value: true,
+          observer: 'test'
+        }
+      },
+      
+      test: function (newValue, old) {
+        console.log(newValue, old);
+      },
+
+      handleTap: function() {
+        var element = this.$$('.operations');
+        
+        if ( element.style.visibility === 'visible' ) {
+          element.style.visibility = 'hidden';
+          element.style.width = '0px';
+          console.log('hide');
+        }
+        else {
+          element.style.visibility = 'visible';
+          element.style.width = '72px';
+          console.log('show');
+        }
+      }
+    });
+  </script>
+  
+</dom-module>

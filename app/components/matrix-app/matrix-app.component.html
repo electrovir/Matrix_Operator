@@ -1,13 +1,26 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../matrix-controls/matrix-controls.component.html">
+<link rel="import" href="../matrix-view/matrix-view.component.html">
 
 <dom-module id="matrix-app">
   <template>
+    <style>
+      h1 {
+        display: none;
+      }
+    
+    </style>
+    
     <h1>
-      Matrix App Here
+      Matrix Operator
     </h1>
+    
     <matrix-controls style = "display: block; margin: 0 auto; width: 60%;">
     </matrix-controls>
+    
+    <matrix-view>
+    </matrix-view>
+    
   </template>
   
   <script>

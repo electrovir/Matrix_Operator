@@ -1,0 +1,30 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../matrix-row-controls/matrix-row-controls.component.html">
+
+<dom-module id="matrix-row">
+  <template>
+    <style>
+      :host {
+        /*background-color: red;*/
+        display: block;
+      }
+    </style>
+    
+    <matrix-row-controls is-hidden = "[[derp]]" >
+    </matrix-row-controls>
+    
+    <input>
+    <input>
+  </template>
+  
+  <script>
+    Polymer ({
+      is: 'matrix-row',
+      
+      ready: function() {
+        this.derp = false;
+      }
+    });
+  </script>
+  
+</dom-module>
