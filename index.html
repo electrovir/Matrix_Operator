@@ -9,14 +9,32 @@
     Matrix Operator
   </title>
   <style>
-  html {
+    html {
       min-height: 100%;
     }
     body {
       min-height: 100%;
+      margin: 0;
+    }
+    
+    .background-div {
       background: linear-gradient(0deg, lightgray, white 80%) no-repeat;
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -2;
+    }
+    
+    matrix-app {
+      width: 100%;
+      height: 100%;
     }
   </style>
+  
+  <meta name="apple-mobile-web-app-capable" content="yes">
   
   <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js">
   </script>
@@ -36,10 +54,23 @@
   <link rel="import" href="app/components/github-ribbon/github-ribbon.component.html" >
   
   <!-- <link href="style.css" rel="stylesheet" type="text/css"> -->
+  <script>
+    function hideAddressBar() {
+      if(!window.location.hash) {
+        if(document.height < window.outerHeight)
+          document.body.style.height = (window.outerHeight + 50) + 'px';
+        setTimeout( function() { 
+            window.scrollTo(0, 1); 
+            document.body.style.height = 'auto'; 
+          }, 50 );
+      }
+    }
+  </script>
 </head>
-<body>
-  
-  <matrix-app style = "display: block; margin: 0 auto; width: 100%; text-align: center;">
+<body ontouchstart>
+  <div class="background-div">
+  </div>
+  <matrix-app>
   </matrix-app>
   
   <github-ribbon>

@@ -2,45 +2,120 @@
 
 <dom-module id="matrix-controls">
   <template>
-    <button>
-      Help
-    </button>
-    <button>
-      Reset
-    </button>
-    <button>
-      Clear
-    </button>
     
-    <br>
+    <style>
+      :host {
+        width: 100%;
+        display: block;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        background: linear-gradient(to bottom, rgba(20, 20, 30, 0.8), rgba(0, 0, 10, 0.8));
+      }
+      
+      .control-row {
+        width: 100%;
+        display: flex;
+        height: 25%;
+        box-sizing: border-box;
+        border-top: 2px solid rgba(255, 255, 255, 0.9);
+        
+      }
+      
+      .control-row:first-child {
+        border-top: 3px solid rgba(255, 255, 255, 0.9);
+      }
+      
+      .control-row:last-child {
+        border-bottom: 3px solid rgba(255, 255, 255, 0.9);
+      }
+      
+      .control-row > div {
+        text-transform: uppercase;
+        flex-grow: 1;
+        border: none;
+        color: white;
+        margin: 0;
+        cursor: pointer;
+        text-shadow: 0px 3px 10px rgba(0,0,0,0.2),
+                     0px 5px 2px rgba(0,0,0,0.15),
+                     0px 7px 30px rgba(0,0,0,0.15);
+        
+        text-align: center;
+        font-family: "Arial";
+        font-size: 1em;
+        
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-basis: 0;
+        
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none;   /* Chrome/Safari/Opera */
+        -khtml-user-select: none;    /* Konqueror */
+        -moz-user-select: none;      /* Firefox */
+        -ms-user-select: none;       /* Internet Explorer/Edge */
+        user-select: none;           
+      }
+      
+      .control-row > div:active {
+        box-shadow: inset 0 1px 2px 0px rgba(0, 0, 0, 0.5);
+        padding-top: 2px;
+        background-color: rgba(255, 255, 240, 0.4);
+        
+        text-shadow: 0px 2px 10px rgba(0,0,0,0.25),
+                     0px 4px 2px rgba(0,0,0,0.2),
+                     0px 6px 30px rgba(0,0,0,0.2);
+      }
+      
+      .control-row > * + * {
+        border-left: 3px solid rgba(255, 255, 255, 0.9);
+      }
+      
+    </style>
     
-    <button>
-      + Row
-    </button>
-    <button>
-      - Row
-    </button>
     
-    <br>
+    <div class="control-row">
+      <div>
+        Help
+      </div>
+      <div>
+        Reset
+      </div>
+      <div>
+        Clear
+      </div>
+    </div>
     
-    <button>
-      + Col
-    </button>
-    <button>
-      - Col
-    </button>
+    <div class="control-row">
+      <div>
+        + Row
+      </div>
+      <div>
+        + Col
+      </div>
+    </div>
     
-    <br>
+    <div class="control-row">
+      <div>
+        - Row
+      </div>
+      <div>
+        - Col
+      </div>
+    </div>
     
-    <button>
-      Undo
-    </button>
-    <button>
-      Check
-    </button>
-    <button>
-      Redo
-    </button>
+    <div class="control-row">
+      <div>
+        Undo
+      </div>
+      <div>
+        Check
+      </div>
+      <div>
+        Redo
+      </div>
+    </div>
   </template>
   
   <script>
