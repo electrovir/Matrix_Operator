@@ -5,11 +5,6 @@
     
     <style>
       :host {
-        width: 100%;
-        display: block;
-        position: fixed;
-        bottom: 0;
-        left: 0;
         background: linear-gradient(to bottom, rgba(20, 20, 30, 0.8), rgba(0, 0, 10, 0.8));
       }
       
@@ -55,13 +50,17 @@
         -khtml-user-select: none;    /* Konqueror */
         -moz-user-select: none;      /* Firefox */
         -ms-user-select: none;       /* Internet Explorer/Edge */
-        user-select: none;           
+        user-select: none;
+      }
+      
+      .control-row > div:hover {
+        background-color: rgba(255, 255, 240, 0.3);
       }
       
       .control-row > div:active {
         box-shadow: inset 0 1px 2px 0px rgba(0, 0, 0, 0.5);
         padding-top: 2px;
-        background-color: rgba(255, 255, 240, 0.4);
+        background-color: rgba(255, 255, 240, 0.6);
         
         text-shadow: 0px 2px 10px rgba(0,0,0,0.25),
                      0px 4px 2px rgba(0,0,0,0.2),
@@ -77,13 +76,13 @@
     
     <div class="control-row">
       <div>
-        Help
+        Undo
       </div>
       <div>
-        Reset
+        Check
       </div>
       <div>
-        Clear
+        Redo
       </div>
     </div>
     
@@ -107,13 +106,13 @@
     
     <div class="control-row">
       <div>
-        Undo
+        Help
       </div>
       <div>
-        Check
+        Reset
       </div>
       <div>
-        Redo
+        Clear
       </div>
     </div>
   </template>

@@ -5,16 +5,48 @@
 <dom-module id="matrix-app">
   <template>
     <style>
-      h1 {
-        display: none;
+      :host {
+        display: flex;
+        flex-direction: column;
       }
       
       matrix-controls {
-        height: 180px;
+        width: 100%;
         box-sizing: border-box;
+        position: relative;
       }
       
       matrix-view {
+        box-sizing: border-box;
+      }
+      
+      @media (max-width: 800px), (max-height: 600px) {
+        h1 {
+          display: none;
+        }
+      }
+      @media (max-height: 600px) and (orientation: landscape) {
+        matrix-controls {
+          width: 200px;
+          height: 100%;
+          border-right: 3px solid rgba(255, 255, 255, 0.9);
+        }
+        :host {
+          flex-direction: row-reverse;
+        }
+        matrix-view {
+          width: calc(100% - 200px);
+          height: 100%;
+        }
+      }
+      
+      @media (max-width: 800px) and (orientation: portrait), (min-height: 600px) and (max-width: 800px) and (orientation: landscape) {
+        matrix-view {
+          height: calc(100% - 180px);
+        }
+        matrix-controls {
+          height: 180px;
+        }
       }
     
     </style>
@@ -23,12 +55,11 @@
       Matrix Operator
     </h1>
     
-    <matrix-controls>
-    </matrix-controls>
-    
     <matrix-view>
     </matrix-view>
     
+    <matrix-controls>
+    </matrix-controls>
   </template>
   
   <script>

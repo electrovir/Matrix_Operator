@@ -9,9 +9,23 @@
         flex-direction: column;
         align-items: center;
         padding: 2em;
+        justify-content: center;
+      }
+      matrix-row {
+        flex-grow: 1;
+        flex-basis: auto;
+        flex-shrink: 1;
+      }
+      #text-length-test {
+        position: absolute;
+        /*visibility: hidden;*/
+        height: auto;
+        width: auto;
+        white-space: nowrap;
       }
       
     </style>
+    <div id="text-length-test"></div>
     
     <matrix-row>
     </matrix-row>
@@ -23,7 +37,103 @@
   
   <script>
     Polymer ({
-      is: 'matrix-view'
+      is: 'matrix-view',
+      listeners: {
+        input: 'handleInput'
+      },
+      
+      attached: function() {
+        GLOBAL_MAX_TEXT_HEIGHT = window.getComputedStyle(document.getElementsByTagName('INPUT')[0]).getPropertyValue('font-size');
+      },
+      handleInput: function(event) {
+        var element = event.target;
+        var elementWidth = element.clientWidth;
+        var textMaxWidth = elementWidth - 10;
+        var elementFontSize = getElementFontSize();
+        var elementHeight = element.clientHeight;
+        
+        function getElementFontSize() {
+          return removePX( window.getComputedStyle(element).getPropertyValue('font-size') );
+        }
+        function removePX(text) {
+          return text.replace(/px/g, '');
+        }
+        function fixPX(text) {
+          text = String(text);
+          if ( text.indexOf('px') === -1) {
+            text = String(text).concat('px');
+          }
+          return text;
+        }
+        function isInputSizeUnchanged() {          
+          return getElementFontSize() === elementFontSize && elementWidth === element.clientWidth;
+        }
+        function computedCSS(property) {
+          return window.getComputedStyle(element).getPropertyValue(property);
+        }
+        function isFontSizeSmallEnough(fontSize) {
+          fontSize = fixPX(fontSize);
+          return getTextWidth( element.value, fontSize + ' ' + computedCSS('font-family') ) < textMaxWidth;
+        }
+        function isFontSizeWayTooSmall(fontSize) {
+          fontSize = fixPX(fontSize);
+          return isFontSizeSmallEnough( fontSize ) && getTextWidth( element.value, fontSize + ' ' + computedCSS('font-family') ) < textMaxWidth - 20;
+        }
+        
+        
+        if (element.tagName === 'INPUT') {
+          
+          var newSize = Number( elementFontSize );
+          
+          if( !isFontSizeSmallEnough( elementFontSize ) ) {
+            // text is bigger than width of input box
+            while ( isInputSizeUnchanged() && !isFontSizeSmallEnough( newSize ) && (newSize >= 25) ) {
+              newSize -= 5;
+            }
+            
+            if ( isInputSizeUnchanged() ) {
+              element.style.fontSize = fixPX( newSize );
+              if (newSize < 25 ) {
+                element.style.wordBreak = "break-word";
+                element.style.wordWrap = "break-word";
+              }
+            }
+            
+          }
+          
+          else if( isFontSizeWayTooSmall( elementFontSize ) ) {
+            while ( isFontSizeSmallEnough( newSize ) && newSize < removePX( GLOBAL_MAX_TEXT_HEIGHT ) ) {
+              newSize += 5;
+            }
+            if ( newSize < GLOBAL_MAX_TEXT_HEIGHT ) {
+              newSize = GLOBAL_MAX_TEXT_HEIGHT;
+            }
+            element.style.wordBreak = "";
+            element.style.wordWrap = "";
+            element.style.fontSize = fixPX( newSize - 5);
+          }
+        }
+        
+        /**
+         * Uses canvas.measureText to compute and return the width of the given text of given font in pixels.
+         * 
+         * @param text The text to be rendered.
+         * @param {String} font The css font descriptor that text is to be rendered with (e.g. "14px verdana").
+         * 
+         * @see http://stackoverflow.com/questions/118241/calculate-text-width-with-javascript/21015393#21015393
+         * (getTextWidth("hello there!", "bold 12pt arial"));  // close to 86
+         */
+        function getTextWidth(text, font) {
+            // if given, use cached canvas for better performance
+            // else, create new canvas
+            var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
+            var context = canvas.getContext("2d");
+            context.font = font;
+            var metrics = context.measureText(text);
+            return metrics.width;
+        }
+
+      }
     });
     
   </script>
