@@ -11,6 +11,7 @@
         width: 100%;
       }
       input {
+        transition: font-size 0.05s ease-in-out;
         margin: 4px;
         width: 70px;
         text-align: center;
@@ -60,7 +61,21 @@
       is: 'matrix-row',
       
       ready: function() {
-        this.derp = false;
+        GLOBAL_DEBUG.derp = Polymer.dom(this.root).querySelectorAll('input');
+        GLOBAL_DEBUG.thing = this;
+        console.dir(this);
+      },
+      attached: function() {
+        console.log('derp');
+        Polymer.dom(this.root).querySelectorAll('input').forEach( function(element) {
+          var minHeight = element.clientHeight - 20;
+          var textHeight = Number(  window.getComputedStyle(element).getPropertyValue('font-size').replace(/px/, '') );
+          console.log('text', textHeight, 'min', minHeight);
+          if ( textHeight > minHeight ) {
+            console.log('LERP');
+            element.style.fontSize = String(minHeight).concat('px');
+          }
+        });
       }
     });
   </script>

@@ -39,24 +39,33 @@
     Polymer ({
       is: 'matrix-view',
       listeners: {
-        input: 'handleInput'
+        input: 'handleInputEvent'
       },
       
       attached: function() {
-        GLOBAL_MAX_TEXT_HEIGHT = window.getComputedStyle(document.getElementsByTagName('INPUT')[0]).getPropertyValue('font-size');
+        function setGlobalTextHeight() {
+          GLOBAL_MAX_TEXT_HEIGHT = Number( window.getComputedStyle( document.getElementsByTagName('INPUT')[0] ).getPropertyValue('font-size').replace(/px/g, '') );
+        }
+        setGlobalTextHeight();
+        window.addEventListener('resize', function() {
+          console.log(this);
+          var text_Size = document.querySelector('matrix-view').handleInputEvent( { target: document.getElementsByTagName('INPUT')[0] } );
+          
+        } );
       },
-      handleInput: function(event) {
+      handleInputEvent: function(event) {
         var element = event.target;
         var elementWidth = element.clientWidth;
         var textMaxWidth = elementWidth - 10;
-        var elementFontSize = getElementFontSize();
+        var elementFontSize = Number( getElementFontSize() );
         var elementHeight = element.clientHeight;
         
         function getElementFontSize() {
           return removePX( window.getComputedStyle(element).getPropertyValue('font-size') );
         }
         function removePX(text) {
-          return text.replace(/px/g, '');
+          text = String(text);
+          return Number( text.replace(/px/g, '') );
         }
         function fixPX(text) {
           text = String(text);
@@ -65,6 +74,7 @@
           }
           return text;
         }
+        // isInputSizeUnchanged is used to prevent this from stacking, if the size was changed before this finishes, it simply does nothing
         function isInputSizeUnchanged() {          
           return getElementFontSize() === elementFontSize && elementWidth === element.clientWidth;
         }
@@ -72,22 +82,22 @@
           return window.getComputedStyle(element).getPropertyValue(property);
         }
         function isFontSizeSmallEnough(fontSize) {
-          fontSize = fixPX(fontSize);
-          return getTextWidth( element.value, fontSize + ' ' + computedCSS('font-family') ) < textMaxWidth;
+          // console.log('small enough', getTextWidth( element.value, fixPX(fontSize) + ' ' + computedCSS('font-family') ) < textMaxWidth, fontSize < elementHeight - 20);
+          // console.log('font size:', fontSize, 'min height:', elementHeight - 20);
+          
+          return getTextWidth( element.value, fixPX(fontSize) + ' ' + computedCSS('font-family') ) < textMaxWidth && fontSize <= elementHeight - 20;
         }
         function isFontSizeWayTooSmall(fontSize) {
-          fontSize = fixPX(fontSize);
-          return isFontSizeSmallEnough( fontSize ) && getTextWidth( element.value, fontSize + ' ' + computedCSS('font-family') ) < textMaxWidth - 20;
+          return isFontSizeSmallEnough( fontSize ) && getTextWidth( element.value, fixPX(fontSize) + ' ' + computedCSS('font-family') ) < textMaxWidth - 20;
         }
         
         
         if (element.tagName === 'INPUT') {
           
-          var newSize = Number( elementFontSize );
+          var newSize = elementFontSize;
           
           if( !isFontSizeSmallEnough( elementFontSize ) ) {
-            // text is bigger than width of input box
-            while ( isInputSizeUnchanged() && !isFontSizeSmallEnough( newSize ) && (newSize >= 25) ) {
+            while ( isInputSizeUnchanged() && !isFontSizeSmallEnough( newSize ) && (newSize >= 12) ) {
               newSize -= 5;
             }
             
@@ -100,18 +110,18 @@
             }
             
           }
-          
           else if( isFontSizeWayTooSmall( elementFontSize ) ) {
             while ( isFontSizeSmallEnough( newSize ) && newSize < removePX( GLOBAL_MAX_TEXT_HEIGHT ) ) {
               newSize += 5;
             }
-            if ( newSize < GLOBAL_MAX_TEXT_HEIGHT ) {
-              newSize = GLOBAL_MAX_TEXT_HEIGHT;
+            if ( newSize >= GLOBAL_MAX_TEXT_HEIGHT ) {
+              newSize = GLOBAL_MAX_TEXT_HEIGHT + 5;
             }
             element.style.wordBreak = "";
             element.style.wordWrap = "";
             element.style.fontSize = fixPX( newSize - 5);
           }
+          return newSize;
         }
         
         /**
