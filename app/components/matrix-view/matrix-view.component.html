@@ -13,19 +13,12 @@
       }
       matrix-row {
         flex-grow: 1;
-        flex-basis: auto;
+        flex-basis: 0;
         flex-shrink: 1;
-      }
-      #text-length-test {
-        position: absolute;
-        /*visibility: hidden;*/
-        height: auto;
-        width: auto;
-        white-space: nowrap;
+        width: 100%;
       }
       
     </style>
-    <div id="text-length-test"></div>
     
     <matrix-row>
     </matrix-row>
@@ -37,113 +30,7 @@
   
   <script>
     Polymer ({
-      is: 'matrix-view',
-      listeners: {
-        input: 'handleInputEvent'
-      },
-      
-      attached: function() {
-        function setGlobalTextHeight() {
-          GLOBAL_MAX_TEXT_HEIGHT = Number( window.getComputedStyle( document.getElementsByTagName('INPUT')[0] ).getPropertyValue('font-size').replace(/px/g, '') );
-        }
-        setGlobalTextHeight();
-        window.addEventListener('resize', function() {
-          console.log(this);
-          var text_Size = document.querySelector('matrix-view').handleInputEvent( { target: document.getElementsByTagName('INPUT')[0] } );
-          
-        } );
-      },
-      handleInputEvent: function(event) {
-        var element = event.target;
-        var elementWidth = element.clientWidth;
-        var textMaxWidth = elementWidth - 10;
-        var elementFontSize = Number( getElementFontSize() );
-        var elementHeight = element.clientHeight;
-        
-        function getElementFontSize() {
-          return removePX( window.getComputedStyle(element).getPropertyValue('font-size') );
-        }
-        function removePX(text) {
-          text = String(text);
-          return Number( text.replace(/px/g, '') );
-        }
-        function fixPX(text) {
-          text = String(text);
-          if ( text.indexOf('px') === -1) {
-            text = String(text).concat('px');
-          }
-          return text;
-        }
-        // isInputSizeUnchanged is used to prevent this from stacking, if the size was changed before this finishes, it simply does nothing
-        function isInputSizeUnchanged() {          
-          return getElementFontSize() === elementFontSize && elementWidth === element.clientWidth;
-        }
-        function computedCSS(property) {
-          return window.getComputedStyle(element).getPropertyValue(property);
-        }
-        function isFontSizeSmallEnough(fontSize) {
-          // console.log('small enough', getTextWidth( element.value, fixPX(fontSize) + ' ' + computedCSS('font-family') ) < textMaxWidth, fontSize < elementHeight - 20);
-          // console.log('font size:', fontSize, 'min height:', elementHeight - 20);
-          
-          return getTextWidth( element.value, fixPX(fontSize) + ' ' + computedCSS('font-family') ) < textMaxWidth && fontSize <= elementHeight - 20;
-        }
-        function isFontSizeWayTooSmall(fontSize) {
-          return isFontSizeSmallEnough( fontSize ) && getTextWidth( element.value, fixPX(fontSize) + ' ' + computedCSS('font-family') ) < textMaxWidth - 20;
-        }
-        
-        
-        if (element.tagName === 'INPUT') {
-          
-          var newSize = elementFontSize;
-          
-          if( !isFontSizeSmallEnough( elementFontSize ) ) {
-            while ( isInputSizeUnchanged() && !isFontSizeSmallEnough( newSize ) && (newSize >= 12) ) {
-              newSize -= 5;
-            }
-            
-            if ( isInputSizeUnchanged() ) {
-              element.style.fontSize = fixPX( newSize );
-              if (newSize < 25 ) {
-                element.style.wordBreak = "break-word";
-                element.style.wordWrap = "break-word";
-              }
-            }
-            
-          }
-          else if( isFontSizeWayTooSmall( elementFontSize ) ) {
-            while ( isFontSizeSmallEnough( newSize ) && newSize < removePX( GLOBAL_MAX_TEXT_HEIGHT ) ) {
-              newSize += 5;
-            }
-            if ( newSize >= GLOBAL_MAX_TEXT_HEIGHT ) {
-              newSize = GLOBAL_MAX_TEXT_HEIGHT + 5;
-            }
-            element.style.wordBreak = "";
-            element.style.wordWrap = "";
-            element.style.fontSize = fixPX( newSize - 5);
-          }
-          return newSize;
-        }
-        
-        /**
-         * Uses canvas.measureText to compute and return the width of the given text of given font in pixels.
-         * 
-         * @param text The text to be rendered.
-         * @param {String} font The css font descriptor that text is to be rendered with (e.g. "14px verdana").
-         * 
-         * @see http://stackoverflow.com/questions/118241/calculate-text-width-with-javascript/21015393#21015393
-         * (getTextWidth("hello there!", "bold 12pt arial"));  // close to 86
-         */
-        function getTextWidth(text, font) {
-            // if given, use cached canvas for better performance
-            // else, create new canvas
-            var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
-            var context = canvas.getContext("2d");
-            context.font = font;
-            var metrics = context.measureText(text);
-            return metrics.width;
-        }
-
-      }
+      is: 'matrix-view'
     });
     
   </script>
