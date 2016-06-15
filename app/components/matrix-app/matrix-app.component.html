@@ -8,44 +8,94 @@
       :host {
         display: flex;
         flex-direction: column;
+        align-items: center;
+        
+        font-family: helvetica;
       }
       
       matrix-controls {
-        width: 100%;
+        transition: 0.2s;
+        width: 800px;
         box-sizing: border-box;
+        
+        z-index: 99;
         position: relative;
+        
+        border-style: solid;
+        border-color: rgba(255, 255, 255, 0.9);
+        border-width: 0;
       }
       
       matrix-view {
+        margin-bottom: 10em;
+        max-height: 80%;
+        width: 80%;
         box-sizing: border-box;
+        
+        flex-grow: 1;
+        
+        position: relative;
       }
+      h1 {
+        transition: all 0.4s ease-in-out;
+        opacity: 1;
+      }
+      
+      /* MOBILE STYLE */
       
       @media (max-width: 800px), (max-height: 600px) {
-        h1 {
-          display: none;
-        }
-      }
-      @media (max-height: 600px) and (orientation: landscape) {
-        matrix-controls {
-          width: 200px;
-          height: 100%;
-          border-right: 3px solid rgba(255, 255, 255, 0.9);
-        }
         :host {
-          flex-direction: row-reverse;
+          flex-direction: column-reverse;
+        }
+        h1 {
+          order: 99;
+          transition: all 0.4s ease-in-out;
+          font-size: 0px;
+          opacity: 0;
+        }
+        matrix-controls {
+          background: linear-gradient(to bottom, rgba(20, 20, 30, 0.8), rgba(0, 0, 10, 0.8));
+          width: 100%;
+          height: 180px;
+          
+          border-top-width: 3px;
+          border-bottom-width: 3px;
         }
         matrix-view {
-          width: calc(100% - 200px);
-          height: 100%;
+          height: auto;
+          max-height: none;
+          width: 100%;
+          max-width: none;
+          
+          margin: 0;
+          
+          flex-basis: 0;
+          flex-grow: 1;
+          flex-shrink: 1;
         }
       }
       
-      @media (max-width: 800px) and (orientation: portrait), (min-height: 600px) and (max-width: 800px) and (orientation: landscape) {
-        matrix-view {
-          height: calc(100% - 180px);
+      /* LANDSCAPE MOBILE STYLE */
+      
+      @media (max-width: 800px) and (orientation: landscape), (max-height: 600px) and (orientation: landscape) {
+        :host {
+          flex-direction: row;
+        }
+        h1 {
+          transition: none;
         }
         matrix-controls {
-          height: 180px;
+          height: 100%;
+          width: 250px;
+          max-width: 40%;
+          
+          border-top-width: 0;
+          border-bottom-width: 0;
+          border-left-width: 3px;
+          border-right-width: 3px;
+        }
+        matrix-view {
+          height: 100%;
         }
       }
     
@@ -55,11 +105,12 @@
       Matrix Operator
     </h1>
     
+    <matrix-controls>
+    </matrix-controls>
+    
     <matrix-view>
     </matrix-view>
     
-    <matrix-controls>
-    </matrix-controls>
   </template>
   
   <script>

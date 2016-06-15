@@ -11,31 +11,40 @@
       }
       input {
         transition: font-size 0.05s ease-in-out;
-        transition: border 0.2s ease-in-out;
-        margin: 4px;
-        width: 70px;
-        text-align: center;
-        font-size: 2.5em;
-        font-family: helvetica;
-        -webkit-appearance: none;
-        border-radius: 0;
-        outline: none;
-        box-sizing: border-box;
-        border: 2px solid lightgray;
-        padding: 5px;
+        transition: border 0.1s ease-in-out, box-shadow 0.3s ease-in-out;
+        
+        margin: 5px;
+        width: 50px;
+        padding: 2px;
         flex-grow: 1;
         flex-basis: 0;
-        font-size: 1px;
+        
+        font-size: 1px;        
+        text-align: center;
+        font-size: 2.5em;
+        
+        outline: none;
+        -webkit-appearance: none;
+        
+        border-radius: 2px;
+        box-sizing: border-box;
+        border: 2px solid hsl(0, 0%, 82%);
       }
       input:focus {
         border: 2px solid skyblue;
+        box-shadow: 0 0 4px 0 skyblue inset;
       }
+      
       matrix-row-controls {
         align-self: center;
       }
+      
+      matrix-row-controls {
+        
+      }
     </style>
     
-    <matrix-row-controls is-hidden = "[[derp]]" >
+    <matrix-row-controls>
     </matrix-row-controls>
     
     <input>

@@ -5,45 +5,55 @@
     
     <style>
       :host {
-        background: linear-gradient(to bottom, rgba(20, 20, 30, 0.8), rgba(0, 0, 10, 0.8));
+        display: flex;
+        flex-direction: column;
       }
       
       .control-row {
-        width: 100%;
-        display: flex;
-        height: 25%;
         box-sizing: border-box;
-        border-top: 2px solid rgba(255, 255, 255, 0.9);
+        width: 100%;
         
-      }
-      
-      .control-row:first-child {
-        border-top: 3px solid rgba(255, 255, 255, 0.9);
-      }
-      
-      .control-row:last-child {
-        border-bottom: 3px solid rgba(255, 255, 255, 0.9);
+        display: flex;
+        justify-content: center;
+        flex-grow: 1;
+        
+        border-color: inherit;
+        border-style: inherit;
+        border-width: 0;
       }
       
       .control-row > div {
-        text-transform: uppercase;
-        flex-grow: 1;
-        border: none;
-        color: white;
-        margin: 0;
-        cursor: pointer;
-        text-shadow: 0px 3px 10px rgba(0,0,0,0.2),
-                     0px 5px 2px rgba(0,0,0,0.15),
-                     0px 7px 30px rgba(0,0,0,0.15);
+        background: linear-gradient(to bottom, hsla(240, 10%, 30%, 0.8), hsla(240, 10%, 5%, 0.8) );
+        /*background-color: red;*/
         
-        text-align: center;
-        font-family: "Arial";
-        font-size: 1em;
+        border-color: hsla(240, 10%, 60%, 1);
+        border-style: inherit;
+        border-width: 2px;
+        border-radius: 5px;
+        
+        box-sizing: border-box;
+        margin: 5px;
+        padding: 2px;
+        max-width: 100px;
+        min-height: 35px;
+        
         
         display: flex;
         justify-content: center;
         align-items: center;
         flex-basis: 0;
+        flex-grow: 1;
+        
+        color: white;
+        text-align: center;
+        font-family: "Arial";
+        font-size: 1em;
+        text-transform: uppercase;
+        text-shadow: 0px 3px 10px rgba(0,0,0,0.2),
+                     0px 5px 2px rgba(0,0,0,0.15),
+                     0px 7px 30px rgba(0,0,0,0.15);
+        
+        cursor: pointer;
         
         -webkit-touch-callout: none; /* iOS Safari */
         -webkit-user-select: none;   /* Chrome/Safari/Opera */
@@ -54,22 +64,48 @@
       }
       
       .control-row > div:hover {
-        background-color: rgba(255, 255, 240, 0.3);
+        background: linear-gradient(to bottom, hsla(60, 2%, 30%, 0.8), hsla(60, 2%, 40%, 0.8) );
+        /*background: hsla(60, 2%, 50%, 1);*/
       }
       
       .control-row > div:active {
+        padding-top: 4px;
+        padding-bottom: 0;
+        
         box-shadow: inset 0 1px 2px 0px rgba(0, 0, 0, 0.5);
-        padding-top: 2px;
-        background-color: rgba(255, 255, 240, 0.6);
         
         text-shadow: 0px 2px 10px rgba(0,0,0,0.25),
                      0px 4px 2px rgba(0,0,0,0.2),
                      0px 6px 30px rgba(0,0,0,0.2);
       }
       
-      .control-row > * + * {
-        border-left: 3px solid rgba(255, 255, 255, 0.9);
+      
+      @media (max-width: 800px), (max-height: 600px) {
+        .control-row > div {
+          background: none;
+          
+          border-radius: 0;
+          border-width: 0;
+          border-color: inherit;
+          
+          margin: 0;
+          max-width: none;
+          min-height: none;
+        }
+        
+        .control-row > div:hover {
+          background: rgba(255, 255, 240, 0.3);
+        }
+        
+        .control-row > div + div {
+          border-left-width: 3px;
+        }
+        
+        .control-row + .control-row {
+          border-top-width: 2px;
+        }
       }
+      
       
     </style>
     
