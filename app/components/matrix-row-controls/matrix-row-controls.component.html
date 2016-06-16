@@ -38,15 +38,37 @@
         z-index: 50;
       }
       
+      .three-lines svg {
+        height: 14px;
+      }
+      
+      .three-lines svg path {
+        fill: #555;
+      }
+      
       .three-lines:active {
         background: orange;
       }
       
+      .arrow-svg {
+        height: 18px;
+        fill: white;
+      }
+      
+      .cross-svg {
+        height: 14px;
+        fill: white;
+      }
+      
+      .plus-svg {
+        height: 16px;
+        fill: white;
+      }
       
       .operations {
         transition: all .2s ease-in-out;
         
-        background: linear-gradient(to bottom, rgba(20, 20, 30, 0.4), rgba(0, 0, 10, 0.4));
+        background: linear-gradient(to bottom, rgba(20, 20, 30, 0.8), rgba(0, 0, 10, 0.8));
         
         display: flex;
         justify-content: center;
@@ -57,6 +79,7 @@
         top: 0;
         
         padding: 0;
+        padding-left: 4px;
         
         visibility: hidden;
         width: 0;
@@ -79,10 +102,6 @@
         background: red;
       }
       
-      .operations > *:first-child {
-        padding-left: 4px;
-      }
-      
       .operations > * + * {
         border-color: inherit;
         border-style: inherit;
@@ -93,6 +112,7 @@
       .operations > div {
         box-sizing: border-box;
         flex-grow: 1;
+        flex-basis: 0;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -106,23 +126,18 @@
     </style>
     
     <div on-tap = "handleTap" class = "three-lines" >
-      <!-- <svg width="10" height="10"> -->
-      <svg width="10px" height="10px">
-        <path d="M0,1 10,1" stroke="#000" stroke-width="2"/>
-        <path d="M0,5 10,5" stroke="#000" stroke-width="2"/>
-        <path d="M0,9 10,9" stroke="#000" stroke-width="2"/>
-      </svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="46.123" height="36.063" viewBox="0 0 46.123 36.063"><path d="M46.123 3.606c0 1.992-1.355 3.606-3.026 3.606H3.026C1.355 7.213 0 5.599 0 3.606 0 1.615 1.355 0 3.026 0h40.07c1.672 0 3.027 1.615 3.027 3.606zm0 14.426c0 1.992-1.355 3.606-3.026 3.606H3.026C1.355 21.639 0 20.024 0 18.032c0-1.992 1.355-3.606 3.026-3.606h40.07c1.672 0 3.027 1.614 3.027 3.606zm0 14.426c0 1.991-1.355 3.605-3.026 3.605H3.026C1.355 36.063 0 34.449 0 32.458c0-1.992 1.355-3.606 3.026-3.606h40.07c1.672 0 3.027 1.614 3.027 3.606z"/></svg>
     </div>
     
     <div class="operations">
       <div>
-        <img src="scroll.svg">
+        <svg class="arrow-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.75 54.966"><path d="M13.481 37.591h5.263c.769 0 1.254.857.872 1.52-2.957 5.122-5.913 10.243-8.869 15.364-.378.654-1.366.654-1.744 0C6.046 49.354 3.09 44.232.133 39.11c-.383-.662.104-1.52.872-1.52h5.266L6.27 17.374l-5.265-.001c-.769 0-1.255-.857-.872-1.52C3.09 10.733 6.046 5.612 9.002.491c.378-.655 1.365-.655 1.744 0l8.871 15.363c.382.663-.104 1.52-.872 1.52H13.48v20.217z"/></svg>
       </div>
       <div>
-        <img src="cross.svg">
+        <svg class="cross-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40.523 40.523"><path d="M39.729 34.414L25.36 20.229 39.549 5.855c1.174-1.191.975-3.29-.445-4.688-1.418-1.397-3.52-1.563-4.693-.372L20.229 15.163 5.855.973C4.664-.2 2.565 0 1.167 1.419-.23 2.837-.396 4.938.795 6.112l14.367 14.183L.972 34.67c-1.172 1.189-.973 3.287.445 4.685 1.42 1.397 3.521 1.564 4.692.375l14.186-14.369 14.375 14.19c1.189 1.172 3.287.973 4.684-.445 1.398-1.42 1.564-3.522.375-4.692z"/></svg>
       </div>
       <div>
-        <img src="plus.svg">
+        <svg class="plus-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42.123 42.122"><path d="M39.097 17.455h-14.43V3.026C24.667 1.354 23.052 0 21.061 0c-1.99 0-3.605 1.354-3.605 3.026v14.429H3.025C1.355 17.455 0 19.069 0 21.062c0 1.991 1.355 3.606 3.025 3.605h14.43v14.43c0 1.67 1.615 3.025 3.605 3.025 1.994 0 3.607-1.355 3.607-3.025v-14.43h14.43c1.672 0 3.025-1.614 3.025-3.605.001-1.993-1.353-3.607-3.025-3.607z"/></svg>
       </div>
     </div>
     
