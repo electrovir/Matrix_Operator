@@ -6,10 +6,10 @@
     <style>
       :host {
         display: flex;
-        /*padding: 2em;*/
+        padding: 2em;
         
         flex-direction: column;
-        /*align-items: center;*/
+        /*align-items: stretch;*/
         /*justify-content: center;*/
         overflow: scroll;
       }
@@ -17,6 +17,8 @@
         transition: all 0.2s ease-in-out;
         height: 100px;
         flex-shrink: 0;
+        min-height: 50px;
+        margin: 0 auto;
         /*
           after HOURS of looking, i found this following line is REQUIRED to get the matrix-row to fill the width of the container matrix-view while allowing matrix-view to scroll still
         */
@@ -24,42 +26,19 @@
       }
       
       @media (max-width: 800px), (max-height: 600px) {
+        :host {
+          justify-content: stretch;
+          align-content: stretch;
+          align-items: stretch;
+        }
         matrix-row {
-          width: 100%;
+          min-width: 100%;
           flex-grow: 1;
-          flex-basis: 0;
-          flex-shrink: 1;
         }
       }
       
     </style>
     
-    <matrix-row>
-    </matrix-row>
-    
-    <matrix-row>
-    </matrix-row>
-    
-    <matrix-row>
-    </matrix-row>
-    
-    <matrix-row>
-    </matrix-row>
-    <matrix-row>
-    </matrix-row>
-    
-    <matrix-row>
-    </matrix-row>
-    <matrix-row>
-    </matrix-row>
-    
-    <matrix-row>
-    </matrix-row>
-    <matrix-row>
-    </matrix-row>
-    
-    <matrix-row>
-    </matrix-row>
     <matrix-row>
     </matrix-row>
     

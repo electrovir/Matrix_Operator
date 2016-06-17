@@ -15,7 +15,6 @@
       }
       
       .three-lines {
-        /*display: inline-block;*/
         background: linear-gradient(to bottom, hsla(240, 10%, 100%, 1), hsla(240, 10%, 95%, 1) 80%);
         
         position: -webkit-sticky;
@@ -166,9 +165,9 @@
         console.log(newValue, old);
       },
 
-      handleTap: function() {
+      handleTap: function(event) {
         var element = this.$$('.operations');
-        
+        event.stopPropagation();
         if ( element.style.visibility === 'visible' ) {
           element.style.visibility = 'hidden';
           element.style.width = '0px';

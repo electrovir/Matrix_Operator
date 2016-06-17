@@ -32,19 +32,25 @@
       }
       
       matrix-row-controls {
-      position: -webkit-sticky;
-      position: -moz-sticky;
-      position: -o-sticky;
-      position: -ms-sticky;
-      position: sticky;
-      left: 0;
+        position: -webkit-sticky;
+        position: -moz-sticky;
+        position: -o-sticky;
+        position: -ms-sticky;
+        position: sticky;
+        
+        margin: 5px;
+        left: 5px;
+        
         align-self: center;
       }
       
       @media (max-width: 800px), (max-height: 600px) {
         input {
+          width: 80px;
           flex-grow: 1;
-          flex-basis: 0;
+          flex-basis: 50px;
+          /*min-width: 60px;*/
+          flex-shrink: 1;
         }
       }
       
@@ -61,12 +67,7 @@
     <input>
     <input>
     <input>
-    <input>
-    <input>
-    <input>
-    <input>
-    <input>
-    <input>
+    
   </template>
   
   <script>
@@ -88,7 +89,7 @@
         resizeAllInputs();
         
         window.addEventListener('resize', function() {
-          console.log('resize!');
+          // console.log('resize!');
           resizeAllInputs();
         });
       },
@@ -166,10 +167,10 @@
         var start_specs = getSpecs(element, MARGIN);
         var new_font_size = start_specs.font_size;
         
-        console.log(start_specs);
+        // console.log(start_specs);
         
         if ( !isFontSmallEnough( start_specs, start_specs.font_size ) ) {
-          console.log('too big!: ' + start_specs.font_size);
+          // console.log('too big!: ' + start_specs.font_size);
           while ( !isFontSmallEnough( start_specs, new_font_size ) && new_font_size > MIN_SIZE ) {
             new_font_size -= INC;
           }
