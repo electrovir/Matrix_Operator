@@ -23,7 +23,7 @@
       }
       
       .control-row > div {
-        background: linear-gradient(to bottom, hsla(240, 10%, 30%, 0.8), hsla(240, 10%, 5%, 0.8) );
+        background: linear-gradient(to bottom, hsla(240, 30%, 10%, 0.8), hsla(240, 100%, 2%, 0.8) );
         /*background-color: red;*/
         
         border-color: hsla(240, 10%, 60%, 1);
@@ -51,7 +51,8 @@
         text-transform: uppercase;
         text-shadow: 0px 3px 10px rgba(0,0,0,0.2),
                      0px 5px 2px rgba(0,0,0,0.15),
-                     0px 7px 30px rgba(0,0,0,0.15);
+                     0px 7px 30px rgba(0,0,0,0.15),
+                     0px 0px 1px  #FFF;
         
         cursor: pointer;
         
@@ -82,6 +83,9 @@
       
       
       @media (max-width: 800px), (max-height: 600px) {
+        :host {
+          background: linear-gradient(to bottom, hsla(240, 30%, 10%, 0.8), hsla(240, 100%, 2%, 0.8) );
+        }
         .control-row > div {
           background: none;
           

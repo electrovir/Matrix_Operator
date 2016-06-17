@@ -6,16 +6,21 @@
     <style>
       :host {
         display: flex;
-        padding: 2em;
+        /*padding: 2em;*/
         
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        /*align-items: center;*/
+        /*justify-content: center;*/
+        overflow: scroll;
       }
       matrix-row {
         transition: all 0.2s ease-in-out;
         height: 100px;
-        width: 400px;
+        flex-shrink: 0;
+        /*
+          after HOURS of looking, i found this following line is REQUIRED to get the matrix-row to fill the width of the container matrix-view while allowing matrix-view to scroll still
+        */
+        align-self: baseline;
       }
       
       @media (max-width: 800px), (max-height: 600px) {
@@ -35,6 +40,31 @@
     <matrix-row>
     </matrix-row>
     
+    <matrix-row>
+    </matrix-row>
+    
+    <matrix-row>
+    </matrix-row>
+    <matrix-row>
+    </matrix-row>
+    
+    <matrix-row>
+    </matrix-row>
+    <matrix-row>
+    </matrix-row>
+    
+    <matrix-row>
+    </matrix-row>
+    <matrix-row>
+    </matrix-row>
+    
+    <matrix-row>
+    </matrix-row>
+    <matrix-row>
+    </matrix-row>
+    
+    <matrix-row>
+    </matrix-row>
   </template>
   
   <script>
