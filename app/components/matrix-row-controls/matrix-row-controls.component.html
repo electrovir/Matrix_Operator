@@ -5,7 +5,6 @@
     
     <style>
       :host {
-        position: relative;
         -webkit-touch-callout: none; /* iOS Safari */
         -webkit-user-select: none;   /* Chrome/Safari/Opera */
         -khtml-user-select: none;    /* Konqueror */
@@ -15,6 +14,7 @@
       }
       
       .three-lines {
+        display: none;
         background: linear-gradient(to bottom, hsla(240, 10%, 100%, 1), hsla(240, 10%, 95%, 1) 80%);
         
         position: -webkit-sticky;
@@ -25,16 +25,14 @@
         
         box-sizing: border-box;
         
-        display: flex;
         align-items: center;
         justify-content: center;
         
         height: 32px;
         width: 34px;
-        /*padding: 2px 7px;*/
         margin: 0;
         
-        border: 2px solid hsl(0, 0%, 70%);
+        border: 2px solid hsla(240, 10%, 60%, 1);
         border-radius: 3px;
         
         cursor: pointer;
@@ -51,7 +49,7 @@
       }
       
       .three-lines:active {
-        background: orange;
+        background: hsl(195, 80%, 80%);
       }
       
       .arrow-svg {
@@ -70,25 +68,21 @@
       }
       
       .operations {
-        transition: all .2s ease-in-out;
+        height: 80px;
         
         background: linear-gradient(to bottom, hsla(240, 30%, 10%, 0.8), hsla(240, 100%, 2%, 0.8) );
-;
         
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: stretch;
         
-        position: absolute;
-        left: 26px;
-        top: 0;
+        position: relative;
+        margin: 4px;
+        margin-left: 8px;
         
         padding: 0;
-        padding-left: 4px;
         
-        visibility: hidden;
-        width: 0;
-        height: 32px;
         box-sizing: border-box;
         
         z-index: 0;
@@ -97,36 +91,98 @@
         
         cursor: pointer;
         
-        border: 2px solid hsl(0, 0%, 70%);
-        border-top-right-radius: 3px;
-        border-bottom-right-radius: 3px;
-        
-      }
-      
-      .operations > div:active {
-        background: red;
+        border: 2px solid hsla(240, 10%, 60%, 1);
+        border-radius: 3px;
       }
       
       .operations > * + * {
         border-color: inherit;
         border-style: inherit;
         border-width: 0;
-        border-left-width: 1px;
+        border-top-width: 1px;
+      }
+      
+      .operations > div:active {
+        background: hsl(195, 80%, 40%);
       }
       
       .operations > div {
         box-sizing: border-box;
-        flex-grow: 1;
-        flex-basis: 0;
+        
         display: flex;
+        
         align-items: center;
         justify-content: center;
+        
+        flex-grow: 1;
+        flex-basis: 0;
+        padding: 4px;
       }
       
       .operations img {
         height: 10px;
       }
       
+      
+      @media (max-width: 800px), (max-height: 600px) {
+        .three-lines {
+          display: flex;
+        }
+        
+        .operations {
+          margin: 0;
+          width: 0;
+          visibility: 0;
+          position: absolute;
+          height: 32px;
+          flex-direction: row;
+          padding-left: 4px;
+          top: 0;
+          left: 26px;
+          border-radius: 0;
+          border-top-right-radius: 3px;
+          border-bottom-right-radius: 3px;
+        }
+        
+        .operations > * + * {
+          border-width: 0;
+          border-left-width: 1px;
+        }
+        
+        .operations > div {
+          padding: 0;
+        }
+        
+        .expanded {
+          animation: forwards .2s ease-in-out grow_operations;
+        }
+        
+        .contracted {
+          animation: forwards .2s ease-in-out shrink_operations;
+        }
+        
+        @keyframes grow_operations {
+          from {
+            width: 0;
+            visibility: visible;
+          }
+          to {
+            width: 120px;
+            visibility: visible;
+          }
+        }
+
+        @keyframes shrink_operations {
+          from {
+            width: 120px;
+            visibility: visible;
+          }
+          to {
+            width: 0;
+            visibility: hidden;
+          }
+        }
+      }
       
     </style>
     
@@ -168,15 +224,14 @@
       handleTap: function(event) {
         var element = this.$$('.operations');
         event.stopPropagation();
-        if ( element.style.visibility === 'visible' ) {
-          element.style.visibility = 'hidden';
-          element.style.width = '0px';
-          console.log('hide');
+        if ( element.classList.contains('contracted') || !element.classList.contains('expanded') ) {
+          element.classList.remove('contracted');
+          element.classList.add('expanded');
+          console.log('show');
         }
         else {
-          element.style.visibility = 'visible';
-          element.style.width = '120px';
-          console.log('show');
+          element.classList.add('contracted');
+          console.log('hide');
         }
       }
     });

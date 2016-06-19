@@ -27,8 +27,8 @@
         border: 2px solid hsl(0, 0%, 82%);
       }
       input:focus {
-        border: 2px solid skyblue;
-        box-shadow: 0 0 4px 0 skyblue inset;
+        border: 2px solid hsl(195, 80%, 70%);
+        box-shadow: 0 0 4px 0 hsl(195, 80%, 70%) inset;
       }
       
       matrix-row-controls {
@@ -52,6 +52,10 @@
           /*min-width: 60px;*/
           flex-shrink: 1;
         }
+        .blocked {
+          pointer-events: none;
+          z-index: -1;
+        }
       }
       
     </style>
@@ -59,12 +63,6 @@
     <matrix-row-controls>
     </matrix-row-controls>
     
-    <input>
-    <input>
-    <input>
-    <input>
-    <input>
-    <input>
     <input>
     <input>
     

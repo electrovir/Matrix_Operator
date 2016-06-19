@@ -16,8 +16,6 @@
   "homepage": "electrovir.github.io/Matrix_Operator",
   "ignore": [
     "**/.*",
-    "node_modules",
-    "bower_components",
     "test",
     "tests"
   ],

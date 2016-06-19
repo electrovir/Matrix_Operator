@@ -35,6 +35,10 @@
           min-width: 100%;
           flex-grow: 1;
         }
+        .blocked {
+          pointer-events: none;
+          z-index: -1;
+        }
       }
       
     </style>
@@ -44,12 +48,72 @@
     
     <matrix-row>
     </matrix-row>
+    
   </template>
   
   <script>
     Polymer ({
-      is: 'matrix-view'
+      is: 'matrix-view',
+      listeners: {
+        // 'scroll': 'handleScroll'
+      },
+      attached: function() {
+        function disableHoveredInputs(disabled, class_name) {
+          disabled.forEach( function( element, index, array) {
+            if (element && element.classList) {
+              element.classList.remove(class_name);
+            }
+            array = array.splice( index, 1 );
+          });
+          
+          Array.prototype.forEach.call( document.getElementsByTagName('matrix-row-controls'), function(element) {
+            var e_pos = element.getBoundingClientRect();
+            
+            var positions = {
+            top: e_pos.top - 1,
+            left: e_pos.left - 1,
+            right: e_pos.right + 1,
+            middle: (e_pos.left + e_pos.right) / 2
+            };
+            
+            var top_left = document.elementFromPoint( positions.left, positions.top );
+            var top_right = document.elementFromPoint( positions.right, positions.top );
+            var top_middle = document.elementFromPoint( positions.middle, positions.top );
+            
+            disabled.push(top_left);
+            disabled.push(top_right);
+            disabled.push(top_middle);
+            
+            
+          if (top_left && top_left.tagName === 'INPUT') {
+            top_left.classList.add(class_name);
+          }
+          if (top_right && top_right.tagName === 'INPUT') {
+            top_right.classList.add(class_name);
+          }
+          if (top_middle && top_middle.tagName === 'INPUT') {
+            top_middle.classList.add(class_name);
+          }
+          });
+        }
+        var already_disabled = [];
+        var ticking = false;
+        var disabled_class_name = 'blocked';
+        
+        
+        this.addEventListener('scroll', function() {
+          if (!ticking) {
+            window.requestAnimationFrame( function() {
+              disableHoveredInputs(already_disabled, disabled_class_name);
+              ticking = false;
+            });
+          }
+          ticking = true;
+        });
+      }
     });
     
   </script>
 </dom-module>
+
+

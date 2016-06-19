@@ -24,9 +24,8 @@
       
       .control-row > div {
         background: linear-gradient(to bottom, hsla(240, 30%, 10%, 0.8), hsla(240, 100%, 2%, 0.8) );
-        /*background-color: red;*/
         
-        border-color: hsla(240, 10%, 60%, 1);
+        border-color: inherit;
         border-style: inherit;
         border-width: 2px;
         border-radius: 5px;
@@ -65,8 +64,7 @@
       }
       
       .control-row > div:hover {
-        background: linear-gradient(to bottom, hsla(60, 2%, 30%, 0.8), hsla(60, 2%, 40%, 0.8) );
-        /*background: hsla(60, 2%, 50%, 1);*/
+        background: linear-gradient(to bottom, hsla(195, 30%, 25%, 0.8), hsla(195, 20%, 30%, 0.8) );
       }
       
       .control-row > div:active {
@@ -84,7 +82,7 @@
       
       @media (max-width: 800px), (max-height: 600px) {
         :host {
-          background: linear-gradient(to bottom, hsla(240, 30%, 10%, 0.8), hsla(240, 100%, 2%, 0.8) );
+          background: linear-gradient(to bottom, hsla(195, 30%, 10%, 0.9), hsla(195, 80%, 2%, 0.9) );
         }
         .control-row > div {
           background: none;
@@ -101,7 +99,7 @@
         }
         
         .control-row > div:hover {
-          background: rgba(255, 255, 240, 0.3);
+          background: hsla(195, 10%, 50%, 0.8);
         }
         
         .control-row > div + div {
