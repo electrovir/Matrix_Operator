@@ -118,7 +118,9 @@ function matrixAppReducer(state, action) {
   
   // NOTE: This following line MIGHT have big performance consequences.
   // NOTE: I am using JSON here because object.assign doesn't do a deep copy, which completely wrecks its usefulness in using it to make a copy...
-  var newState = JSON.parse( JSON.stringify(state) );
+  if (state) {
+    var newState = JSON.parse( JSON.stringify(state) );
+  }
   
   switch( action.type ) {
   
