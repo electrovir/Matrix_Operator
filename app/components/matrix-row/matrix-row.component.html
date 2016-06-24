@@ -64,7 +64,7 @@
     <matrix-row-controls>
     </matrix-row-controls>
     
-    <!-- this is really buggy but I found that I had to have brackets around rowData and curly braces around the item::input for it to two-way data bind properly (I couldn't get one-way to work).  With curly braces around rowDad, typing in input boxes overrides other input boxes' input... -->
+  
     <template is="dom-repeat" items="{{rowData}}" as="item">
       <input value="{{item::input}}" index="{{index}}" oninput="console.log(this.index);">
     </template>
