@@ -46,7 +46,7 @@
     </style>
     
     <template is="dom-repeat" items="{{matrix}}">
-      <matrix-row row-data="item">
+      <matrix-row row-data="{{item}}">
       </matrix-row>
     </template>
     
@@ -82,6 +82,7 @@
         //
         //  EXECUTION
         //
+        this.matrix = [['1','2'],['3','4']];
         var ticking = false;
         var disabled_class_name = 'blocked';
         var that = this;
