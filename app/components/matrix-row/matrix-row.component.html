@@ -64,8 +64,9 @@
     <matrix-row-controls>
     </matrix-row-controls>
     
-    <template is="dom-repeat" items="{{rowData}}">
-      <input value="{{item::input}}">
+    <!-- this is really buggy but I found that I had to have brackets around rowData and curly braces around the item::input for it to two-way data bind properly (I couldn't get one-way to work).  With curly braces around rowDad, typing in input boxes overrides other input boxes' input... -->
+    <template is="dom-repeat" items="{{rowData}}" as="item">
+      <input value="{{item::input}}" index="{{index}}" oninput="console.log(this.index);">
     </template>
     
   </template>
@@ -82,9 +83,10 @@
           notify: true,
           value: { herp: 'derp', zero: '0'}
         },
-        poop: {
-          type: Object,
-          notify: true
+        rowData: {
+          type: Array,
+          notify: true,
+          value: ['a', 'b', 'c']
         }
       },
       
@@ -96,7 +98,7 @@
           'meep'
         ];
         var that = this;
-        
+        // this.rowData = ['a','a','a'];
         // this.thingie = { herp: 'derp', zero: '0'};
         // this.thingie = ['array0', 'array1' ];
         

@@ -45,10 +45,10 @@
       
     </style>
     
-    <template is="dom-repeat" items="{{matrix}}">
-      <matrix-row row-data="{{item}}">
+    <!-- <template is="dom-repeat" items="{{matrix}}"> -->
+      <matrix-row >
       </matrix-row>
-    </template>
+    <!-- </template> -->
     
   </template>
   
@@ -62,7 +62,7 @@
       properties: {
         matrix: {
           type: Array,
-          notify: true
+          notify: false
         }
       },
       updateMatrix: function() {
@@ -121,14 +121,14 @@
           ticking = true;
         });
         
-        function derp() {
-          that.matrix = store.getState().getCurrent();
-        }
+        // function derp() {
+        //   that.matrix = store.getState().getCurrent();
+        // }
+        // 
+        // store.subscribe(derp);
+        // derp();
         
-        store.subscribe(derp);
-        derp();
-        
-        
+        // that.matrix = [['a','a','a'],['b','b','b']];
         
       }
     });
