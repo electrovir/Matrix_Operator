@@ -64,18 +64,9 @@
     <matrix-row-controls>
     </matrix-row-controls>
     
-    <input>
-    <input>
-    <input>
-    <input>
-    <input>
-    <input>
-    <input>
-    <input>
-    <input>
-    <input>
-    <input>
-    <input>
+    <template is="dom-repeat" items="{{rowData}}">
+      <input value="{{item::input}}">
+    </template>
     
   </template>
   
@@ -83,11 +74,31 @@
     Polymer ({
       is: 'matrix-row',
       listeners: {
-        input: 'resizeInput'
+        // input: 'resizeInput'
+      },
+      properties: {
+        thingie: {
+          type: Object,
+          notify: true,
+          value: { herp: 'derp', zero: '0'}
+        },
+        poop: {
+          type: Object,
+          notify: true
+        }
       },
       
       attached: function() {
+        GLOBAL_DEBUG.this = this;
+        this.myList = [
+          'herp',
+          'derp',
+          'meep'
+        ];
         var that = this;
+        
+        // this.thingie = { herp: 'derp', zero: '0'};
+        // this.thingie = ['array0', 'array1' ];
         
         function resizeAllInputs() {
           Polymer.dom(that.root).querySelectorAll('input').forEach( function(element) {
@@ -101,6 +112,7 @@
           // console.log('resize!');
           resizeAllInputs();
         });
+        console.log(document.getElementsByTagName('input')[0]);
       },
       
       resizeInput: function(element) {

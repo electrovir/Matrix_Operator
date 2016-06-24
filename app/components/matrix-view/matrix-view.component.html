@@ -45,11 +45,10 @@
       
     </style>
     
-    <matrix-row>
-    </matrix-row>
-    
-    <matrix-row>
-    </matrix-row>
+    <template is="dom-repeat" items="{{matrix}}">
+      <matrix-row row-data="{{item}}">
+      </matrix-row>
+    </template>
     
   </template>
   
@@ -58,6 +57,20 @@
       is: 'matrix-view',
       listeners: {
         // 'scroll': 'handleScroll'
+        // input: 'dispatch'
+      },
+      properties: {
+        matrix: {
+          type: Array,
+          notify: true
+        }
+      },
+      updateMatrix: function() {
+        
+        
+      },
+      dispatch: function() {
+        console.log('DISPATCHED!');
       },
       attached: function() {
         function getCurrentStyle(element, property) {
@@ -107,6 +120,16 @@
           }
           ticking = true;
         });
+        
+        function derp() {
+          that.matrix = store.getState().getCurrent();
+        }
+        
+        store.subscribe(derp);
+        derp();
+        
+        
+        
       }
     });
     

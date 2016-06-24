@@ -118,8 +118,10 @@ function matrixAppReducer(state, action) {
   
   // NOTE: This following line MIGHT have big performance consequences.
   // NOTE: I am using JSON here because object.assign doesn't do a deep copy, which completely wrecks its usefulness in using it to make a copy...
+  var newState;
   if (state) {
-    var newState = JSON.parse( JSON.stringify(state) );
+    // newState = JSON.parse( JSON.stringify(state) );
+    newState = Object.assign({}, state);
   }
   
   switch( action.type ) {
@@ -222,7 +224,7 @@ function matrixAppReducer(state, action) {
     // ================================================
 
     case 'swap rows':
-      var new_matrix = newState.getCurrent();
+      var new_matrix = state.getCurrent();
       
       var temp_row = new_matrix[action.operands.row1_index];
       new_matrix[action.operands.row1_index] = new_matrix[action.operands.row2_index];
@@ -268,17 +270,19 @@ function matrixAppReducer(state, action) {
         start_index: 0,             // this is needed to know at what index to start on after loading a timeline from local storage
         // NOTE: using JSON stuff here to get deep copies easily (object.assign don't do deep copies)
         getCurrent: function() {
-          return JSON.parse( JSON.stringify( timeline[index].current_matrix ) );
+          return JSON.parse( JSON.stringify( this.timeline[this.index].current_matrix ) );
         },
         getOriginal: function() {
-          return JSON.parse( JSON.stringify( timeline[index].original_matrix ) );
+          return JSON.parse( JSON.stringify( this.timeline[this.index].original_matrix ) );
         },
         current_operation: null     // corresponds to what operation is currently taking place (dramatically affects the view)
       };
+      
+      var beginner = [ ['', ''], ['', ''] ];
+      addNewMoment( newState, beginner, beginner, null);
     break;
   }
   
   // ------------------------------------------------
-  
   return newState;
 }
