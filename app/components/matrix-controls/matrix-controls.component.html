@@ -116,43 +116,43 @@
     
     
     <div class="control-row">
-      <div>
+      <div onclick="store.dispatch( {type: 'undo'} )">
         Undo
       </div>
       <div>
         Check
       </div>
-      <div>
+      <div onclick="store.dispatch( {type: 'redo'} )">
         Redo
       </div>
     </div>
     
     <div class="control-row">
-      <div>
+      <div onclick="store.dispatch( {type: 'add row'} )">
         + Row
       </div>
-      <div>
+      <div onclick="store.dispatch( {type: 'add column'} )">
         + Col
       </div>
     </div>
     
     <div class="control-row">
-      <div>
+      <div onclick="store.dispatch( {type: 'remove row'} )">
         - Row
       </div>
-      <div>
+      <div onclick="store.dispatch( {type: 'remove column'} )">
         - Col
       </div>
     </div>
     
     <div class="control-row">
-      <div>
+      <div onclick="store.dispatch( {type: 'help'} )">
         Help
       </div>
-      <div>
+      <div onclick="store.dispatch( {type: 'rest to original'} )">
         Reset
       </div>
-      <div>
+      <div onclick="store.dispatch( {type: 'clear'} )">
         Clear
       </div>
     </div>

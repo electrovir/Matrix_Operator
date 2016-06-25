@@ -62,15 +62,32 @@
       properties: {
         matrix: {
           type: Array,
-          notify: true
+          notify: true,
+          value: [
+            [ {value: ''}, {value: ''} ],
+            [ {value: ''}, {value: ''} ]
+          ]
         }
       },
-      updateMatrix: function() {
+      updateMatrix: function(passed_matrix) {
+        var new_matrix = [];
         
+        passed_matrix.forEach( function(row, row_index) {
+          new_matrix.push( [] );
+          row.forEach( function(cell) {
+            new_matrix[row_index].push( {value: cell} );
+          });
+        });
         
+        this.matrix = new_matrix;
+        return new_matrix;
       },
-      dispatch: function() {
-        console.log('DISPATCHED!');
+      updateView: function() {
+        var state = store.getState();
+        console.log(state.getCurrent());
+        
+        this.updateMatrix(state.getCurrent());
+        return state.getCurrent();
       },
       attached: function() {
         function getCurrentStyle(element, property) {
@@ -82,7 +99,6 @@
         //
         //  EXECUTION
         //
-        this.matrix = [['1','2'],['3','4']];
         var ticking = false;
         var disabled_class_name = 'blocked';
         var that = this;
@@ -122,14 +138,8 @@
           ticking = true;
         });
         
-        // function derp() {
-        //   that.matrix = store.getState().getCurrent();
-        // }
-        // 
-        // store.subscribe(derp);
-        // derp();
-        
-        // that.matrix = [['a','a','a'],['b','b','b']];
+        store.subscribe(this.updateView.bind(that));
+        this.updateView();
         
       }
     });

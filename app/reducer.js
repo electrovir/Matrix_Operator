@@ -6,10 +6,20 @@
  * @return            The blank matrix
  * 
 */
-function createBlankMatrix(rowCount, columnCount) {
-  var new_matrix = Array(rowCount);
+function createBlankMatrix(rowCount, columnCount, filler) {
+  var new_matrix = [];
+  for (var i = 0; i < rowCount; i++) {
+    new_matrix.push( [] );
+  }
   new_matrix.forEach( function(row) {
-    row = Array(columnCount);
+    for (i = 0; i < columnCount; i++) {
+      if (filler) {
+        row.push( filler );
+      }
+      else {
+        row.push('');
+      }
+    }
   });
   
   return new_matrix;
@@ -167,6 +177,9 @@ function matrixAppReducer(state, action) {
     case 'add row':
       var current = newState.getCurrent();
       var new_row = createBlankMatrix(1, current[0].length);
+      console.log('blank new row:', new_row, current[0].length);
+      
+      console.log('concat thing', current.concat(new_row));
       
       addNewMoment( newState, current.concat(new_row) );
     break;
@@ -186,7 +199,7 @@ function matrixAppReducer(state, action) {
     case 'add column':
       var new_matrix = newState.getCurrent();
       new_matrix.forEach( function(row) {
-        row.push('0');
+        row.push('');
       });
       
       addNewMoment( newState, new_matrix );
