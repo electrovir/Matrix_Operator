@@ -1,75 +1,64 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../matrix-row-controls/matrix-row-controls.component.html">
 
 <dom-module id="matrix-row">
-  <template>
-    <style>
-      :host { 
-        display: flex;
-        flex-direction: row;
-      }
+  <style>
+    :host { 
+      display: flex;
+      flex-direction: row;
+    }
+    input {
+      transition: font-size 0.05s ease-in-out;
+      transition: border 0.1s ease-in-out, box-shadow 0.3s ease-in-out;
+      
+      margin: 5px;
+      padding: 2px;
+      width: 150px;
+      
+      text-align: center;
+      font-size: 2.5em;
+      
+      outline: none;
+      -webkit-appearance: none;
+      
+      border-radius: 2px;
+      box-sizing: border-box;
+      border: 2px solid hsl(0, 0%, 82%);
+    }
+    input:focus {
+      border: 2px solid hsl(195, 80%, 70%);
+      box-shadow: 0 0 4px 0 hsl(195, 80%, 70%) inset;
+    }
+    
+    matrix-row-controls {
+      position: -webkit-sticky;
+      position: -moz-sticky;
+      position: -o-sticky;
+      position: -ms-sticky;
+      position: sticky;
+      
+      margin: 5px;
+      margin-left: 10px;
+      left: 5px;
+      
+      align-self: center;
+    }
+    
+    @media (max-width: 800px), (max-height: 600px) {
       input {
-        transition: font-size 0.05s ease-in-out;
-        transition: border 0.1s ease-in-out, box-shadow 0.3s ease-in-out;
-        
-        margin: 5px;
-        padding: 2px;
-        width: 150px;
-        
-        text-align: center;
-        font-size: 2.5em;
-        
-        outline: none;
-        -webkit-appearance: none;
-        
-        border-radius: 2px;
-        box-sizing: border-box;
-        border: 2px solid hsl(0, 0%, 82%);
+        width: 80px;
+        flex-grow: 1;
+        flex-basis: 50px;
+        /*min-width: 60px;*/
+        flex-shrink: 1;
       }
-      input:focus {
-        border: 2px solid hsl(195, 80%, 70%);
-        box-shadow: 0 0 4px 0 hsl(195, 80%, 70%) inset;
+      .blocked {
+        pointer-events: none;
+        z-index: -1;
       }
-      
-      matrix-row-controls {
-        position: -webkit-sticky;
-        position: -moz-sticky;
-        position: -o-sticky;
-        position: -ms-sticky;
-        position: sticky;
-        
-        margin: 5px;
-        margin-left: 10px;
-        left: 5px;
-        
-        align-self: center;
-      }
-      
-      @media (max-width: 800px), (max-height: 600px) {
-        input {
-          width: 80px;
-          flex-grow: 1;
-          flex-basis: 50px;
-          /*min-width: 60px;*/
-          flex-shrink: 1;
-        }
-        .blocked {
-          pointer-events: none;
-          z-index: -1;
-        }
-      }
-      
-    </style>
+    }
     
-    <matrix-row-controls>
-    </matrix-row-controls>
-    
-  
-    <template is="dom-repeat" items="{{rowData}}" as="item">
-      <input value="{{item.value::input}}">
-    </template>
-    
-  </template>
+  </style>
   
   <script>
     Polymer ({
@@ -78,14 +67,12 @@
         // input: 'resizeInput'
       },
       properties: {
-        thingie: {
-          type: Object,
-          notify: true,
-          value: { herp: 'derp', zero: '0'}
-        },
         rowData: {
           type: Array,
           notify: true
+        },
+        rowIndex: {
+          type: Number
         }
       },
       
@@ -113,7 +100,7 @@
           // console.log('resize!');
           resizeAllInputs();
         });
-        console.log(document.getElementsByTagName('input')[0]);
+        // console.log(document.getElementsByTagName('input')[0]);
       },
       
       resizeInput: function(element) {

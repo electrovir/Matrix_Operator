@@ -50,8 +50,8 @@ function replaceProperties(oldObject, newData) {
 
 /*
 
-  --=: ACCEPTED SYNTAX FOR ACTION :=--
-  
+  ==== structure for Action ====
+  this is validated inside the reducer  
   
   action {
     type: STRING,
@@ -63,14 +63,13 @@ function replaceProperties(oldObject, newData) {
       timeline:
     },
     
-    operands: {
-      row1_index: ,
-      row2_index: ,
+    operation: {
+      row_1_index: ,
+      row_2_index: ,
       multiple:
     }
   }
 */
-
 
 function matrixAppReducer(state, action) {
   
@@ -91,47 +90,82 @@ function matrixAppReducer(state, action) {
    * 
    * TODO: just make this into a contrustor for the moment object
   */
-  function addNewMoment( passedState, passed_orig_matrix, passed_cur_matrix, passed_action) {
+  function addNewMoment( passedState, passed_orig_matrix, passed_cur_matrix, passed_operation) {
     
     // a moment
     var moment = {
       original_matrix: passed_orig_matrix,
       current_matrix: passed_cur_matrix,
-      operation: null
+      operation: passed_operation
     };
     
-    if (passed_action) {
-      moment.operation = {
-        type: passed_action.type,
-        operands: passed_action.operands
-      };
-    }
     if (!passed_cur_matrix) {
       moment.current_matrix = passed_orig_matrix;
     }
     
-    passedState.timeline.push(moment);
     passedState.index++;
+    
+    
+    if ( passedState.timeline.length > passedState.index + 1 ) {
+      console.log('before', passedState.timeline, 'index', passedState.index, 'length', passedState.timeline.length);
+      passedState.timeline.splice( passedState.index, passedState.timeline.length - passedState.index );
+      console.log('after', passedState.timeline);
+    }
+    // pause(500);
+    passedState.timeline.push(moment);
     
     return true;
   }
   
   function matrixItemMultiply( a, b ) {
-    return a * b;
+    return Number(a) * Number(b);
   }
   
   function matrixItemAdd( a, b ) {
-    return a + b;
+    return Number(a) + Number(b);
   }
   
   
-  
-  // NOTE: This following line MIGHT have big performance consequences.
-  // NOTE: I am using JSON here because object.assign doesn't do a deep copy, which completely wrecks its usefulness in using it to make a copy...
+
   var newState;
   if (state) {
-    // newState = JSON.parse( JSON.stringify(state) );
-    newState = Object.assign({}, state);
+    // newState = JSON.parse( JSON.stringify(state) ); // not using JSON because it can't copy over functions
+    newState = Object.assign({}, state); // NOTE: this does NOT make a deep copy
+  }
+  
+  
+  var accepted_types = ['@@redux/INIT', 'begin operation', 'undo', 'redo', 'load', 'typing input', 'add row', 'add column', 'remove row', 'remove column', 'reset to original', 'clear', 'swap rows', 'multiply row', 'add row multiple', 'open operations'];
+  
+  function invalidAction(type, wrong_thing) {
+    var text =  'Invalid action.'.concat(type).concat(' passed in dispatch');
+    if (wrong_thing) {
+      text = text.concat(': ', wrong_thing);
+    }
+    throw new Error(text);
+  }
+  
+  if ( accepted_types.indexOf(action.type) === -1 ) {
+    invalidAction('type', action.type);
+  }
+  
+  if ( action.operation ) {
+    // if ( !action.operation.multiple && !action.operation.row_1_index && !action.operation.row_2_index) {
+    // console.warn(action.operation);
+    //   invalidAction('operation');
+    // }
+    if ( action.operation.multiple && typeof action.operation.multiple !== 'number') {
+      console.warn(action.operation);
+      invalidAction('operation.multiple', operation.multiple);
+    }
+    if ( action.operation.row_1_index && typeof action.operation.row_1_index !== 'number') {
+      console.warn(action.operation);
+      invalidAction('operation.row_1_index', operation.row_1_index);
+    }
+    if ( action.operation.row_2_index && typeof action.operation.row_2_index !== 'number') {
+      console.warn(action.operation);
+      invalidAction('operation.row_2_index', operation.row_2_index);
+    }
+    
   }
   
   switch( action.type ) {
@@ -149,9 +183,12 @@ function matrixAppReducer(state, action) {
     // ------------------------------------------------
     
     case 'redo':
-      if ( state.index === state.timeline.length - 1 ) {
+      if ( state.index >= state.timeline.length - 1 ) {
         throw new Error('Tried to redo when there was nothing to redo.');
+        // console.log('redo start');
+        // return;
       }
+      
       newState.index++;
     break;
     
@@ -166,6 +203,36 @@ function matrixAppReducer(state, action) {
     break;
     
     // ================================================
+    // Operation steps
+    // ================================================
+    case 'open operations':
+      if ( !state.current_operation.type ) {
+        if ( action.operation.row_1_index === state.current_operation.open_operations ) {
+          newState.current_operation.open_operations = null;
+        }
+        else {
+          newState.current_operation.open_operations = action.operation.row_1_index;
+        }
+      }
+      else {
+        newState.current_operation.open_operations = null;
+      }
+    break;
+    case 'begin operation':
+      if ( !state.current_operation.type ) {
+        console.warn('OPERATION BEGUN');
+        newState.current_operation.row_1_index = action.operation.row_1_index;
+        newState.current_operation.type = action.operation.type;
+      }
+      else {
+        console.warn('OPERATION ENDED');
+        newState.current_operation.type = null;
+      }
+    break;
+    
+    
+    
+    // ================================================
     // MATRIX MUTATIONS
     // ================================================
     case 'typing input':
@@ -177,9 +244,6 @@ function matrixAppReducer(state, action) {
     case 'add row':
       var current = newState.getCurrent();
       var new_row = createBlankMatrix(1, current[0].length);
-      console.log('blank new row:', new_row, current[0].length);
-      
-      console.log('concat thing', current.concat(new_row));
       
       addNewMoment( newState, current.concat(new_row) );
     break;
@@ -191,7 +255,7 @@ function matrixAppReducer(state, action) {
         throw new Error('Tried to remove a row when only two rows were present.');
       }
       
-      addNewMoment( newState, newState.getCurrent().pop() );
+      addNewMoment( newState, newState.getCurrent().slice(0, newState.getCurrent().length - 1) );
     break;
     
     // ------------------------------------------------
@@ -229,7 +293,8 @@ function matrixAppReducer(state, action) {
     // ------------------------------------------------
     
     case 'clear':
-      addNewMoment( newState, createBlankMatrix(state.current_matrix.length, state.current_matrix[0].length) );
+      var current_matrix = state.getCurrent();
+      addNewMoment( newState, createBlankMatrix(current_matrix.length, current_matrix[0].length) );
     break;
     
     // ================================================
@@ -239,38 +304,44 @@ function matrixAppReducer(state, action) {
     case 'swap rows':
       var new_matrix = state.getCurrent();
       
-      var temp_row = new_matrix[action.operands.row1_index];
-      new_matrix[action.operands.row1_index] = new_matrix[action.operands.row2_index];
-      new_matrix[action.operands.row2_index] = temp_row;
+      var temp_row = new_matrix[action.operation.row_1_index];
+      new_matrix[action.operation.row_1_index] = new_matrix[action.operation.row_2_index];
+      new_matrix[action.operation.row_2_index] = temp_row;
       
-      addNewMoment( newState, newState.getOriginal(), new_matrix, action );
+      addNewMoment( newState, newState.getOriginal(), new_matrix, action.operation );
     break;
     
     // ------------------------------------------------
     
     case 'multiply row':
       var new_matrix = newState.getCurrent();
-      var multiple = action.operands.multiple;
+      var multiple = action.operation.multiple;
       
-      new_matrix[action.operands.row1_index].forEach( function(e, i) {
-        e = matrixItemMultiply( e, multiple );
+      console.log('new matrix', new_matrix);
+      
+      new_matrix[action.operation.row_1_index].forEach( function(e, i, array) {
+        // e = matrixItemMultiply( e, multiple );
+        array[i] = matrixItemMultiply( e, multiple );
       });
       
-      addNewMoment( newState, newState.getOriginal(), new_matrix, action );
+      console.log('new matrix after mutation', new_matrix);
+      
+      addNewMoment( newState, newState.getOriginal(), new_matrix, action.operation );
     break;
     
     // ------------------------------------------------
     
     case 'add row multiple':
       var new_matrix = newState.getCurrent();
-      var multiple = action.operands.multiple;
+      var multiple = action.operation.multiple;
       
-      new_matrix[action.operands.row2_index].forEach( function(e, i) {
-        e = matrixItemAdd( matrixItemMultiply( new_matrix[action.operands.row1_index][i], multiple ),  e );
+      new_matrix[action.operation.row_2_index].forEach( function(e, i, array) {
+        array[i] = matrixItemAdd( matrixItemMultiply( new_matrix[action.operation.row_1_index][i], multiple ),  e );
       });
       
-      addNewMoment( newState, newState.getOriginal(), new_matrix, action );
+      addNewMoment( newState, newState.getOriginal(), new_matrix, action.operation );
     break;
+    
     
     // ================================================
     // INITIAL STATE
@@ -288,14 +359,20 @@ function matrixAppReducer(state, action) {
         getOriginal: function() {
           return JSON.parse( JSON.stringify( this.timeline[this.index].original_matrix ) );
         },
-        current_operation: null     // corresponds to what operation is currently taking place (dramatically affects the view)
+        current_operation: {
+          type: null,
+          open_operations: null,
+          row1_index: null,
+          row2_index: null,
+          multiple: null
+        }
       };
       
       var beginner = [ ['', ''], ['', ''] ];
-      addNewMoment( newState, beginner, beginner, null);
+      addNewMoment( newState, beginner, beginner, action.operation );
     break;
   }
-  
   // ------------------------------------------------
+  console.log( newState.index, newState.timeline, 'action:', action );
   return newState;
 }

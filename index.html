@@ -72,6 +72,7 @@
   
   <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
   <script src="node_modules/redux/dist/redux.min.js"></script>
+  <script src="jsDump.js"></script>
   <script src="app/reducer.js"></script>
   <script src="app/services/getHoveredElements.js"></script>
   
@@ -79,6 +80,7 @@
 <body ontouchstart>
   <div class="background-div">
   </div>
+  
   <matrix-app>
   </matrix-app>
   
@@ -87,7 +89,15 @@
   
   <script>
     GLOBAL_DEBUG = {};
+    function pause(milliseconds) {
+    	var dt = new Date();
+    	while ((new Date()) - dt <= milliseconds) { /* Do nothing */ }
+    }
     var store = Redux.createStore(matrixAppReducer);
+    
+    
+    
+    
     
   </script>
 </body>

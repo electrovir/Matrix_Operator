@@ -1,106 +1,10 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../matrix-controls/matrix-controls.component.html">
-<link rel="import" href="../matrix-view/matrix-view.component.html">
+<link rel="import" href="matrix-controls/matrix-controls.component.html">
+<link rel="import" href="matrix-view/matrix-view.component.html">
 
-<dom-module id="matrix-app">
+<dom-module id="matrix-app">  
   <template>
-    <style>
-      :host {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        
-        font-family: helvetica;
-      }
-      
-      matrix-controls {
-        transition: 0.2s;
-        width: 800px;
-        box-sizing: border-box;
-        
-        z-index: 90;
-        position: relative;
-        
-        border-style: solid;
-        border-color: hsla(240, 10%, 60%, 1);
-        border-width: 0;
-      }
-      
-      matrix-view {
-        max-height: 80%;
-        width: 100%;
-        
-        flex-grow: 1;
-        flex-basis: 0;
-        
-        /*position: relative;*/
-      }
-      h1 {
-        transition: all 0.4s ease-in-out;
-        opacity: 1;
-      }
-      
-      /* MOBILE STYLE */
-      
-      @media (max-width: 800px), (max-height: 600px) {
-        :host {
-          flex-direction: column-reverse;
-        }
-        h1 {
-          order: 99;
-          transition: all 0.4s ease-in-out;
-          font-size: 0px;
-          opacity: 0;
-        }
-        matrix-controls {
-          border-color: hsla(0, 0%, 90%, .9);
-          width: 100%;
-          height: 180px;
-          
-          border-top-width: 3px;
-          border-bottom-width: 3px;
-        }
-        matrix-view {
-          height: auto;
-          max-height: none;
-          width: 100%;
-          max-width: none;
-          
-          margin: 0;
-          
-          flex-basis: 0;
-          flex-grow: 1;
-          flex-shrink: 1;
-        }
-      }
-      
-      /* LANDSCAPE MOBILE STYLE */
-      
-      @media (max-width: 800px) and (orientation: landscape), (max-height: 600px) and (orientation: landscape) {
-        :host {
-          flex-direction: row;
-        }
-        h1 {
-          transition: none;
-        }
-        matrix-controls {
-          height: 100%;
-          width: 250px;
-          max-width: 40%;
-          
-          border-top-width: 0;
-          border-bottom-width: 0;
-          border-left-width: 3px;
-          border-right-width: 3px;
-        }
-        matrix-view {
-          height: 100%;
-          width: 100%;
-        }
-      }
-    
-    </style>
-    
+    <link href="matrix-app.style.css" rel="stylesheet" type="text/css">
     <h1>
       Matrix Operator
     </h1>
@@ -109,13 +13,111 @@
     </matrix-controls>
     
     <matrix-view id="app view">
+      <template is="dom-repeat" items="{{matrix}}">
+        <matrix-row row-data="{{item}}" row-index="{{index}}">
+          <matrix-row-controls row-index="{{index}}">
+          </matrix-row-controls>
+          
+          <template is="dom-repeat" items="{{item}}" as="cell">
+            <input value="{{cell.value::input}}">
+          </template>
+          
+        </matrix-row>
+      </template>
     </matrix-view>
     
   </template>
   
   <script>
     Polymer ({
-      is: 'matrix-app'
+      is: 'matrix-app',
+      listeners: {
+        input: 'dispatch'
+      },
+      properties: {
+        matrix: {
+          type: Array,
+          notify: true
+        },
+        
+      },
+      attached: function() {
+        
+        store.subscribe(this.updateView.bind(this));
+        this.updateView();
+      },
+      dispatch: function() {
+        var dispatch_matrix = [];
+        this.matrix.forEach( function(row, row_index) {
+          dispatch_matrix.push([]);
+          row.forEach( function(cell) {
+            dispatch_matrix[row_index].push(cell.value);
+          });
+        });
+        store.dispatch( {type: 'typing input', matrix: dispatch_matrix } );
+      },
+      updateMatrix: function(passed_matrix) {
+        var new_matrix = [];
+        
+        passed_matrix.forEach( function(row, row_index) {
+          new_matrix.push( [] );
+          row.forEach( function(cell) {
+            new_matrix[row_index].push( {value: cell} );
+          });
+        });
+        
+        this.matrix = new_matrix;
+        return new_matrix;
+      },
+      
+      //==============================
+      //         VIEW UPDATER
+      //==============================
+      
+      updateView: function() {
+        var state = store.getState();
+        
+        this.updateMatrix( state.getCurrent() );
+        
+        // operation selected
+        if (state.current_operation.type) {
+          this.querySelectorAll('matrix-row-controls').forEach( function(row, index) {
+            row.selectOperation(state.current_operation.type);
+            row.deselect();
+            if (index === state.current_operation.row_1_index) {
+              row.select(state.current_operation.type);
+            }
+          });
+        }
+        else {
+          this.querySelectorAll('matrix-row-controls').forEach( function(row, index) {
+            row.deselect();
+          });
+        }
+        
+        // three-lines thing clicked
+        if ( state.current_operation.open_operations !== null ) {
+          this.querySelectorAll('matrix-row-controls').forEach( function(row, index) {
+            if (index !== state.current_operation.open_operations) {
+              row.closeOperationsTray();
+            }
+            else {
+              row.openOperationsTray();
+            }
+          });
+        }
+        else {
+          this.querySelectorAll('matrix-row-controls').forEach( function(row) {
+            row.closeOperationsTray();
+          });
+        }
+        
+        return state.getCurrent();
+      }
+      
+      
+      
+      
     });
     
   </script>

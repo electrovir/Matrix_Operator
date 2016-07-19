@@ -1,0 +1,311 @@
+matrix-app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  font-family: helvetica;
+}
+
+matrix-controls {
+  transition: 0.2s;
+  width: 800px;
+  box-sizing: border-box;
+  
+  z-index: 90;
+  position: relative;
+  
+  border-style: solid;
+  border-color: hsla(240, 10%, 60%, 1);
+  border-width: 0;
+}
+
+matrix-view {
+  max-height: 80%;
+  width: 100%;
+  
+  flex-grow: 1;
+  flex-basis: 0;
+  
+  /*position: relative;*/
+}
+h1 {
+  transition: all 0.4s ease-in-out;
+  opacity: 1;
+}
+
+/* MOBILE STYLE */
+
+@media (max-width: 800px), (max-height: 600px) {
+  :host {
+    flex-direction: column-reverse;
+  }
+  h1 {
+    order: 99;
+    transition: all 0.4s ease-in-out;
+    font-size: 0px;
+    opacity: 0;
+  }
+  matrix-controls {
+    border-color: hsla(0, 0%, 90%, .9);
+    width: 100%;
+    height: 180px;
+    
+    border-top-width: 3px;
+    border-bottom-width: 3px;
+  }
+  matrix-view {
+    height: auto;
+    max-height: none;
+    width: 100%;
+    max-width: none;
+    
+    margin: 0;
+    
+    flex-basis: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+}
+
+/* LANDSCAPE MOBILE STYLE */
+
+@media (max-width: 800px) and (orientation: landscape), (max-height: 600px) and (orientation: landscape) {
+  :host {
+    flex-direction: row;
+  }
+  h1 {
+    transition: none;
+  }
+  matrix-controls {
+    height: 100%;
+    width: 250px;
+    max-width: 40%;
+    
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 3px;
+    border-right-width: 3px;
+  }
+  matrix-view {
+    height: 100%;
+    width: 100%;
+  }
+}
+
+
+
+
+matrix-row { 
+  display: flex;
+  flex-direction: row;
+}
+input {
+  transition: font-size 0.05s ease-in-out;
+  transition: border 0.1s ease-in-out, box-shadow 0.3s ease-in-out;
+  
+  margin: 5px;
+  padding: 2px;
+  width: 150px;
+  
+  text-align: center;
+  font-size: 2.5em;
+  
+  outline: none;
+  -webkit-appearance: none;
+  
+  border-radius: 2px;
+  box-sizing: border-box;
+  border: 2px solid hsl(0, 0%, 82%);
+}
+input:focus {
+  border: 2px solid hsl(195, 80%, 70%);
+  box-shadow: 0 0 4px 0 hsl(195, 80%, 70%) inset;
+}
+
+matrix-row-controls {
+  position: -webkit-sticky;
+  position: -moz-sticky;
+  position: -o-sticky;
+  position: -ms-sticky;
+  position: sticky;
+  
+  margin: 5px;
+  margin-left: 10px;
+  left: 5px;
+  
+  align-self: center;
+}
+
+@media (max-width: 800px), (max-height: 600px) {
+  input {
+    width: 80px;
+    flex-grow: 1;
+    flex-basis: 50px;
+    /*min-width: 60px;*/
+    flex-shrink: 1;
+  }
+  .blocked {
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+
+
+
+
+matrix-view {
+  display: flex;
+  padding: 2em 0;
+  
+  flex-direction: column;
+  /*align-items: stretch;*/
+  /*justify-content: center;*/
+  overflow: scroll;
+}
+matrix-row {
+  transition: all 0.2s ease-in-out;
+  height: 100px;
+  flex-shrink: 0;
+  min-height: 50px;
+  margin: 0 auto;
+  /*
+    after HOURS of looking, I found this following line is REQUIRED to get the matrix-row to fill the width of the container matrix-view while allowing matrix-view to scroll still
+    
+    Does not make sense!
+  */
+  align-self: baseline;
+}
+
+@media (max-width: 800px), (max-height: 600px) {
+  :host {
+    justify-content: stretch;
+    align-content: stretch;
+    align-items: stretch;
+  }
+  matrix-row {
+    min-width: 100%;
+    flex-grow: 1;
+  }
+  .blocked {
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+  
+  
+  
+  
+  
+  
+  
+  
+
+matrix-controls {
+  display: flex;
+  flex-direction: column;
+}
+
+.control-row {
+  box-sizing: border-box;
+  width: 100%;
+  
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+  
+  border-color: inherit;
+  border-style: inherit;
+  border-width: 0;
+}
+
+.control-row > div {
+  background: linear-gradient(to bottom, hsla(240, 30%, 10%, 0.8), hsla(240, 100%, 2%, 0.8) );
+  
+  border-color: inherit;
+  border-style: inherit;
+  border-width: 2px;
+  border-radius: 5px;
+  
+  box-sizing: border-box;
+  margin: 5px;
+  padding: 2px;
+  max-width: 100px;
+  min-height: 35px;
+  
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-basis: 0;
+  flex-grow: 1;
+  
+  color: white;
+  text-align: center;
+  font-family: "Arial";
+  font-size: 1em;
+  text-transform: uppercase;
+  text-shadow: 0px 3px 10px rgba(0,0,0,0.2),
+               0px 5px 2px rgba(0,0,0,0.15),
+               0px 7px 30px rgba(0,0,0,0.15),
+               0px 0px 1px  #FFF;
+  
+  cursor: pointer;
+  
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
+  user-select: none;
+}
+
+.control-row > div:hover {
+  background: linear-gradient(to bottom, hsla(195, 30%, 25%, 0.8), hsla(195, 20%, 30%, 0.8) );
+}
+
+.control-row > div:active {
+  padding-top: 4px;
+  padding-bottom: 0;
+  
+  box-shadow: inset 0 1px 2px 0px rgba(0, 0, 0, 0.5);
+  
+  text-shadow: 0px 2px 10px rgba(0,0,0,0.25),
+               0px 4px 2px rgba(0,0,0,0.2),
+               0px 6px 30px rgba(0,0,0,0.2);
+  
+}
+
+
+@media (max-width: 800px), (max-height: 600px) {
+  :host {
+    background: linear-gradient(to bottom, hsla(195, 30%, 10%, 0.9), hsla(195, 80%, 2%, 0.9) );
+  }
+  .control-row > div {
+    background: none;
+    
+    border-radius: 0;
+    border-width: 0;
+    border-color: inherit;
+    
+    box-shadow: none;
+    
+    margin: 0;
+    max-width: none;
+    min-height: none;
+  }
+  
+  .control-row > div:hover {
+    background: hsla(195, 10%, 50%, 0.8);
+  }
+  
+  .control-row > div + div {
+    border-left-width: 3px;
+  }
+  
+  .control-row + .control-row {
+    border-top-width: 2px;
+  }
+}
+  
+  
