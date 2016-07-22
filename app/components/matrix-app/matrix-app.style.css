@@ -36,7 +36,7 @@ h1 {
 /* MOBILE STYLE */
 
 @media (max-width: 800px), (max-height: 600px) {
-  :host {
+  matrix-app {
     flex-direction: column-reverse;
   }
   h1 {
@@ -70,7 +70,7 @@ h1 {
 /* LANDSCAPE MOBILE STYLE */
 
 @media (max-width: 800px) and (orientation: landscape), (max-height: 600px) and (orientation: landscape) {
-  :host {
+  matrix-app {
     flex-direction: row;
   }
   h1 {
@@ -101,7 +101,7 @@ matrix-row {
 }
 input {
   transition: font-size 0.05s ease-in-out;
-  transition: border 0.1s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition: border 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
   
   margin: 5px;
   padding: 2px;
@@ -178,7 +178,7 @@ matrix-row {
 }
 
 @media (max-width: 800px), (max-height: 600px) {
-  :host {
+  matrix-view {
     justify-content: stretch;
     align-content: stretch;
     align-items: stretch;
@@ -278,7 +278,7 @@ matrix-controls {
 
 
 @media (max-width: 800px), (max-height: 600px) {
-  :host {
+  matrix-controls {
     background: linear-gradient(to bottom, hsla(195, 30%, 10%, 0.9), hsla(195, 80%, 2%, 0.9) );
   }
   .control-row > div {

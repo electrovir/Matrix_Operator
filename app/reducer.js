@@ -219,12 +219,17 @@ function matrixAppReducer(state, action) {
       }
     break;
     case 'begin operation':
+      // if there is no current operation taking place
       if ( !state.current_operation.type ) {
         console.warn('OPERATION BEGUN');
         newState.current_operation.row_1_index = action.operation.row_1_index;
         newState.current_operation.type = action.operation.type;
       }
-      else {
+      else if ( action.operation.row_1_index !== state.current_operation.row_1_index ) {
+        console.warn('OPERATION COMPLETED');
+        newState.current_operation.type = null;
+      }
+      else if ( action.operation.row_1_index === state.current_operation.row_1_index ) {
         console.warn('OPERATION ENDED');
         newState.current_operation.type = null;
       }
@@ -373,6 +378,6 @@ function matrixAppReducer(state, action) {
     break;
   }
   // ------------------------------------------------
-  console.log( newState.index, newState.timeline, 'action:', action );
+  console.log( 'index: '.concat( String(newState.index) ), 'timeline:', newState.timeline, 'action: ', action, 'current operation: ', newState.current_operation );
   return newState;
 }

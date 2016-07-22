@@ -53,19 +53,20 @@
         background: hsl(195, 80%, 80%);
       }
       
+      .operation svg {
+        fill: white;
+      }
+      
       .arrow-svg {
         height: 18px;
-        fill: white;
       }
       
       .cross-svg {
         height: 14px;
-        fill: white;
       }
       
       .plus-svg {
         height: 16px;
-        fill: white;
       }
       
       .operations {
@@ -102,13 +103,13 @@
         border-top-width: 1px;
       }
       
-      .operations > div:active {
+      .operation:active {
         background: hsl(195, 80%, 40%);
       }
       
       .operations > div {
         box-sizing: border-box;
-        transition: all .2s ease-in-out, background-color .01s linear;
+        transition: all .2s ease-in-out, background-color .01s ease-in-out;
         overflow: hidden;
         
         display: flex;
@@ -125,8 +126,38 @@
         height: 10px;
       }
       
-      .selected {
+      /*.default_cursor {
         cursor: default;
+      }
+      
+      .default_cursor * {
+        cursor: default;
+      }*/
+      
+      .selected {
+        background-color: hsla(0, 100%, 70%, 1);
+        border-top-width: 0 !important;
+      }
+      
+      .selected svg {
+        fill: hsla(0, 0%, 0%, 0.7);
+      }
+      
+      .selected:active {
+        background-color: white;
+      }
+      
+      .disabled_operation {
+      background: linear-gradient(to bottom, hsla(240, 30%, 10%, 0.4), hsla(240, 100%, 2%, 0.4) );
+      
+      cursor: default;
+      
+      border: 2px solid hsla(240, 10%, 80%, 1);
+      }
+      
+      .disabled_operation svg {
+        transition: all .3s ease-in-out;
+        opacity: 0;
       }
       
       
@@ -228,42 +259,68 @@
         "current-state-changed": 'test'
       },
       
-      selectOperation: function (operation) {
+      showSingleOperator: function (operation) {
         if (typeof operation !== 'string') {
           throw new Error('Invalid operation passed.');
         }
-        this.showAllOperators();
+        this.resetOperators();
         operation = operation.replace(/\s/g, '-');
         
+        this.classList.remove('disabled_operation');
         var keep = this.querySelector( '.'.concat(operation) );
-        if (keep) {
-          this.querySelectorAll('.operation').forEach( function(element) {
-            if (element !== keep) {
-              element.style.flexGrow = 0;
-              element.style.padding = 0;
-              element.style.borderWidth = 0;
-            }
-          });
-        }
+        this.querySelectorAll('.operation').forEach( function(element) {
+          if (element !== keep) {
+            element.style.flexGrow = 0;
+            element.style.padding = 0;
+            element.style.borderWidth = 0;
+          }
+        });
+        return this;
       },
       
-      select: function(operation) {
-        console.log('operation:', operation);
+      disableOperators: function() {
+        this.showSingleOperator('gibberish');
+        this.querySelector('.operations').classList.add('disabled_operation');
+        return this;
+      },
+      
+      highlightOperator: function(operation) {
         operation = operation.replace(/\s/g, '-');
         this.querySelector( '.'.concat(operation) ).classList.add('selected');
+        // if (disableClick) {
+        //   this.querySelector('.operations').classList.add('default_cursor');
+        // }
+        return this;
       },
       
-      deselect: function() {
+      unhighlightOperator: function() {
         var selected = this.querySelector('.selected');
         if (selected) {
-          selected.classList.remove('selected');  
+          selected.classList.remove('selected');
         }
+        return this;
       },
       
-      showAllOperators: function() {
+      resetOperators: function() {
+        var remove_classes = [
+          'selected',
+          'disabled_operation'
+        ];
+        var parent = this;
+        
+        remove_classes.forEach( function(current_class) {
+          var node = parent.querySelector( '.'.concat(current_class) );
+          console.log('node:', node);
+          if (node) {
+            console.log(node);
+            node.classList.remove(current_class);
+          }
+        });
+        
         this.querySelectorAll('.operation').forEach( function(element) {
           element.removeAttribute('style');
         });
+        return this;
       },
       
       closeOperationsTray: function() {

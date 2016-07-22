@@ -74,27 +74,38 @@
       //         VIEW UPDATER
       //==============================
       
-      updateView: function() {
-        var state = store.getState();
-        
-        this.updateMatrix( state.getCurrent() );
-        
+      updateOperationsView: function(state) {
         // operation selected
-        if (state.current_operation.type) {
+        if ( state.current_operation.type && state.current_operation.type !== 'multiply row' ) {
+          // select an operation and select row 1 index's controls
           this.querySelectorAll('matrix-row-controls').forEach( function(row, index) {
-            row.selectOperation(state.current_operation.type);
-            row.deselect();
+            row.showSingleOperator(state.current_operation.type);
+            row.unhighlightOperator();
             if (index === state.current_operation.row_1_index) {
-              row.select(state.current_operation.type);
+              row.highlightOperator(state.current_operation.type);
+            }
+          });
+        }
+        // disable all the controls except the current row for multiply row (it only operates on one row at a time)
+        else if (state.current_operation.type === 'multiply row') {
+          this.querySelectorAll('matrix-row-controls').forEach( function(row, index) {
+            if (index === state.current_operation.row_1_index) {
+              row.showSingleOperator(state.current_operation.type).highlightOperator(state.current_operation.type);
+            }
+            else {
+              row.disableOperators();
+              row.unhighlightOperator();
             }
           });
         }
         else {
           this.querySelectorAll('matrix-row-controls').forEach( function(row, index) {
-            row.deselect();
+            row.resetOperators();
           });
         }
-        
+      },
+      
+      updateThreeLinesView: function(state) {
         // three-lines thing clicked
         if ( state.current_operation.open_operations !== null ) {
           this.querySelectorAll('matrix-row-controls').forEach( function(row, index) {
@@ -111,6 +122,15 @@
             row.closeOperationsTray();
           });
         }
+      },
+      
+      updateView: function() {
+        var state = store.getState();
+        
+        this.updateMatrix( state.getCurrent() );
+        this.updateOperationsView(state);
+        this.updateThreeLinesView(state);
+        
         
         return state.getCurrent();
       }
