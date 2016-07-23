@@ -42,11 +42,8 @@
       }
       
       .three-lines svg {
-        height: 14px;
-      }
-      
-      .three-lines svg path {
         fill: #555;
+        height: 14px;
       }
       
       .three-lines:active {
@@ -135,7 +132,10 @@
       }*/
       
       .selected {
-        background-color: hsla(0, 100%, 70%, 1);
+        background: hsla(0, 100%, 70%, 1);
+      }
+      
+      .operation.selected {
         border-top-width: 0 !important;
       }
       
@@ -160,6 +160,9 @@
         opacity: 0;
       }
       
+      .hidden {
+        display: none;
+      }
       
       @media (max-width: 800px), (max-height: 600px) {
         .three-lines {
@@ -223,18 +226,21 @@
       
     </style>
     
-    <div class = "three-lines" onclick="store.dispatch( { type: 'open operations', operation: { row_1_index: this.parentNode.parentNode.rowIndex } } );">
-      <svg xmlns="http://www.w3.org/2000/svg" width="46.123" height="36.063" viewBox="0 0 46.123 36.063"><path d="M46.123 3.606c0 1.992-1.355 3.606-3.026 3.606H3.026C1.355 7.213 0 5.599 0 3.606 0 1.615 1.355 0 3.026 0h40.07c1.672 0 3.027 1.615 3.027 3.606zm0 14.426c0 1.992-1.355 3.606-3.026 3.606H3.026C1.355 21.639 0 20.024 0 18.032c0-1.992 1.355-3.606 3.026-3.606h40.07c1.672 0 3.027 1.614 3.027 3.606zm0 14.426c0 1.991-1.355 3.605-3.026 3.605H3.026C1.355 36.063 0 34.449 0 32.458c0-1.992 1.355-3.606 3.026-3.606h40.07c1.672 0 3.027 1.614 3.027 3.606z"/></svg>
+    <div class="three-lines" onclick="this.parentNode.dispatchThreeLines(this);">
+      <svg class="hamburger" xmlns="http://www.w3.org/2000/svg" width="46.123" height="36.063" viewBox="0 0 46.123 36.063"><path d="M46.123 3.606c0 1.992-1.355 3.606-3.026 3.606H3.026C1.355 7.213 0 5.599 0 3.606 0 1.615 1.355 0 3.026 0h40.07c1.672 0 3.027 1.615 3.027 3.606zm0 14.426c0 1.992-1.355 3.606-3.026 3.606H3.026C1.355 21.639 0 20.024 0 18.032c0-1.992 1.355-3.606 3.026-3.606h40.07c1.672 0 3.027 1.614 3.027 3.606zm0 14.426c0 1.991-1.355 3.605-3.026 3.605H3.026C1.355 36.063 0 34.449 0 32.458c0-1.992 1.355-3.606 3.026-3.606h40.07c1.672 0 3.027 1.614 3.027 3.606z"/></svg>
+      <svg name="swap" class="inner-swap-rows arrow-svg hidden inner-operation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.75 54.966"><path d="M13.481 37.591h5.263c.769 0 1.254.857.872 1.52-2.957 5.122-5.913 10.243-8.869 15.364-.378.654-1.366.654-1.744 0C6.046 49.354 3.09 44.232.133 39.11c-.383-.662.104-1.52.872-1.52h5.266L6.27 17.374l-5.265-.001c-.769 0-1.255-.857-.872-1.52C3.09 10.733 6.046 5.612 9.002.491c.378-.655 1.365-.655 1.744 0l8.871 15.363c.382.663-.104 1.52-.872 1.52H13.48v20.217z"/></svg>
+      <svg name="multiply" class="inner-multiply-row cross-svg hidden inner-operation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40.523 40.523"><path d="M39.729 34.414L25.36 20.229 39.549 5.855c1.174-1.191.975-3.29-.445-4.688-1.418-1.397-3.52-1.563-4.693-.372L20.229 15.163 5.855.973C4.664-.2 2.565 0 1.167 1.419-.23 2.837-.396 4.938.795 6.112l14.367 14.183L.972 34.67c-1.172 1.189-.973 3.287.445 4.685 1.42 1.397 3.521 1.564 4.692.375l14.186-14.369 14.375 14.19c1.189 1.172 3.287.973 4.684-.445 1.398-1.42 1.564-3.522.375-4.692z"/></svg>
+      <svg name="add" class="inner-add-row-multiple plus-svg hidden inner-operation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42.123 42.122"><path d="M39.097 17.455h-14.43V3.026C24.667 1.354 23.052 0 21.061 0c-1.99 0-3.605 1.354-3.605 3.026v14.429H3.025C1.355 17.455 0 19.069 0 21.062c0 1.991 1.355 3.606 3.025 3.605h14.43v14.43c0 1.67 1.615 3.025 3.605 3.025 1.994 0 3.607-1.355 3.607-3.025v-14.43h14.43c1.672 0 3.025-1.614 3.025-3.605.001-1.993-1.353-3.607-3.025-3.607z"/></svg>
     </div>
     
     <div class="operations">
-      <div class="swap-rows operation" onclick="store.dispatch( { type: 'begin operation', operation: { type: 'swap rows', row_1_index: this.parentNode.parentNode.rowIndex } } );">
+      <div operation="swap rows" class="swap-rows operation" onclick="this.parentNode.parentNode.dispatchOperation(this);">
         <svg name="swap" class="arrow-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.75 54.966"><path d="M13.481 37.591h5.263c.769 0 1.254.857.872 1.52-2.957 5.122-5.913 10.243-8.869 15.364-.378.654-1.366.654-1.744 0C6.046 49.354 3.09 44.232.133 39.11c-.383-.662.104-1.52.872-1.52h5.266L6.27 17.374l-5.265-.001c-.769 0-1.255-.857-.872-1.52C3.09 10.733 6.046 5.612 9.002.491c.378-.655 1.365-.655 1.744 0l8.871 15.363c.382.663-.104 1.52-.872 1.52H13.48v20.217z"/></svg>
       </div>
-      <div class="multiply-row operation" onclick="store.dispatch( { type: 'begin operation', operation: { type: 'multiply row', row_1_index: this.parentNode.parentNode.rowIndex } } );">
+      <div operation="multiply row" class="multiply-row operation" onclick="this.parentNode.parentNode.dispatchOperation(this);">
         <svg name="multiply" class="cross-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40.523 40.523"><path d="M39.729 34.414L25.36 20.229 39.549 5.855c1.174-1.191.975-3.29-.445-4.688-1.418-1.397-3.52-1.563-4.693-.372L20.229 15.163 5.855.973C4.664-.2 2.565 0 1.167 1.419-.23 2.837-.396 4.938.795 6.112l14.367 14.183L.972 34.67c-1.172 1.189-.973 3.287.445 4.685 1.42 1.397 3.521 1.564 4.692.375l14.186-14.369 14.375 14.19c1.189 1.172 3.287.973 4.684-.445 1.398-1.42 1.564-3.522.375-4.692z"/></svg>
       </div>
-      <div class="add-row-multiple operation" onclick="store.dispatch( { type: 'begin operation', operation: { type: 'add row multiple', row_1_index: this.parentNode.parentNode.rowIndex } } );">
+      <div operation="add row multiple" class="add-row-multiple operation" onclick="this.parentNode.parentNode.dispatchOperation(this);">
         <svg name="add" class="plus-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42.123 42.122"><path d="M39.097 17.455h-14.43V3.026C24.667 1.354 23.052 0 21.061 0c-1.99 0-3.605 1.354-3.605 3.026v14.429H3.025C1.355 17.455 0 19.069 0 21.062c0 1.991 1.355 3.606 3.025 3.605h14.43v14.43c0 1.67 1.615 3.025 3.605 3.025 1.994 0 3.607-1.355 3.607-3.025v-14.43h14.43c1.672 0 3.025-1.614 3.025-3.605.001-1.993-1.353-3.607-3.025-3.607z"/></svg>
       </div>
     </div>
@@ -249,14 +255,34 @@
       properties: {
         rowIndex: {
           type: Number
-        },
-        currentState: {
-          type: Object,
-          notify: true
         }
       },
-      listeners: {
-        "current-state-changed": 'test'
+      
+      updateView: function(operation) {
+        
+      },
+      
+      dispatchOperation: function(element) {
+        // store.dispatch( {type: 'operation click', operation: { type: element.getAttribute('operation'), row_1_index: this.rowIndex } } );
+        
+        action('operation click', { operation: element.getAttribute('operation'), index: this.rowIndex} );
+      },
+      
+      dispatchThreeLines: function(element) {
+        // store.dispatch( { type: 'open operations', operation: { row_1_index: this.parentNode.parentNode.rowIndex } } );
+        // var state = store.getState();
+        // if (state.current_operation.type === null) {
+        //   store.dispatch( { type: 'open operations', operation: { row_1_index: this.rowIndex } } );
+        // }
+        // else {
+        //   store.dispatch( {type: 'operation click', operation: {  } );
+        // }
+        
+        action('three lines click', { index: this.rowIndex } );
+      },
+      
+      test: function() {
+        console.warn('TEST FIRED');
       },
       
       showSingleOperator: function (operation) {
@@ -309,11 +335,11 @@
         var parent = this;
         
         remove_classes.forEach( function(current_class) {
-          var node = parent.querySelector( '.'.concat(current_class) );
-          console.log('node:', node);
-          if (node) {
-            console.log(node);
-            node.classList.remove(current_class);
+          var nodes = parent.querySelectorAll( '.'.concat(current_class) );
+          if (nodes.length > 0) {
+            nodes.forEach( function(element) {
+              element.classList.remove(current_class);
+            });
           }
         });
         
@@ -330,6 +356,23 @@
         }
       },
       
+      updateThreeLines: function(operation, highlight) {
+        var threeLines = this.querySelector('.three-lines');
+        if (operation) {
+          threeLines.querySelector('.hamburger').classList.add('hidden');
+          threeLines.querySelector( '.inner-'.concat(operation.replace(/\s/g, '-')) ).classList.remove('hidden');
+          if (highlight) {
+            threeLines.classList.add('selected');
+          }
+        }
+        else {
+          threeLines.querySelector('.hamburger').classList.remove('hidden');
+          threeLines.querySelectorAll('.inner-operation').forEach( function(element) {
+            element.classList.add('hidden');
+          });
+        }
+      },
+      
       openOperationsTray: function() {
         var element = this.querySelector('.operations');
         if ( element.classList.contains('contracted') || !element.classList.contains('expanded') ) {
@@ -337,10 +380,10 @@
           element.classList.add('expanded');
           console.log('show');
         }
-        else {
-          element.classList.add('contracted');
-          console.log('hide');
-        }
+        // else {
+        //   element.classList.add('contracted');
+        //   console.log('hide');
+        // }
       },
 
       handleTap: function(event) {

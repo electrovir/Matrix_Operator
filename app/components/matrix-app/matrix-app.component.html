@@ -2,6 +2,11 @@
 <link rel="import" href="matrix-controls/matrix-controls.component.html">
 <link rel="import" href="matrix-view/matrix-view.component.html">
 
+<script src="../../../node_modules/redux/dist/redux.min.js"></script>
+<script src="services/reducer.js"></script>
+<script src="services/getHoveredElements.js"></script>
+<script src="services/Action.js"></script>
+
 <dom-module id="matrix-app">  
   <template>
     <link href="matrix-app.style.css" rel="stylesheet" type="text/css">
@@ -9,7 +14,7 @@
       Matrix Operator
     </h1>
     
-    <matrix-controls id="app controls">
+    <matrix-controls id="matrix controls">
     </matrix-controls>
     
     <matrix-view id="app view">
@@ -29,10 +34,13 @@
   </template>
   
   <script>
+    var store = Redux.createStore(matrixAppReducer);
+    var app;
+  
     Polymer ({
       is: 'matrix-app',
       listeners: {
-        input: 'dispatch'
+        input: 'handleInput'
       },
       properties: {
         matrix: {
@@ -41,12 +49,14 @@
         },
         
       },
+      
       attached: function() {
         
         store.subscribe(this.updateView.bind(this));
         this.updateView();
+        app = this;
       },
-      dispatch: function() {
+      handleInput: function() {
         var dispatch_matrix = [];
         this.matrix.forEach( function(row, row_index) {
           dispatch_matrix.push([]);
@@ -56,6 +66,11 @@
         });
         store.dispatch( {type: 'typing input', matrix: dispatch_matrix } );
       },
+      
+      //==============================
+      //         VIEW UPDATER
+      //==============================
+      
       updateMatrix: function(passed_matrix) {
         var new_matrix = [];
         
@@ -69,68 +84,83 @@
         this.matrix = new_matrix;
         return new_matrix;
       },
-      
-      //==============================
-      //         VIEW UPDATER
-      //==============================
-      
-      updateOperationsView: function(state) {
-        // operation selected
-        if ( state.current_operation.type && state.current_operation.type !== 'multiply row' ) {
-          // select an operation and select row 1 index's controls
-          this.querySelectorAll('matrix-row-controls').forEach( function(row, index) {
-            row.showSingleOperator(state.current_operation.type);
-            row.unhighlightOperator();
-            if (index === state.current_operation.row_1_index) {
-              row.highlightOperator(state.current_operation.type);
-            }
-          });
-        }
-        // disable all the controls except the current row for multiply row (it only operates on one row at a time)
-        else if (state.current_operation.type === 'multiply row') {
-          this.querySelectorAll('matrix-row-controls').forEach( function(row, index) {
-            if (index === state.current_operation.row_1_index) {
-              row.showSingleOperator(state.current_operation.type).highlightOperator(state.current_operation.type);
-            }
-            else {
-              row.disableOperators();
-              row.unhighlightOperator();
-            }
-          });
-        }
-        else {
-          this.querySelectorAll('matrix-row-controls').forEach( function(row, index) {
-            row.resetOperators();
-          });
-        }
-      },
-      
-      updateThreeLinesView: function(state) {
-        // three-lines thing clicked
-        if ( state.current_operation.open_operations !== null ) {
-          this.querySelectorAll('matrix-row-controls').forEach( function(row, index) {
-            if (index !== state.current_operation.open_operations) {
-              row.closeOperationsTray();
-            }
-            else {
-              row.openOperationsTray();
-            }
-          });
-        }
-        else {
-          this.querySelectorAll('matrix-row-controls').forEach( function(row) {
-            row.closeOperationsTray();
-          });
-        }
-      },
+      // 
+      // updateOperationsView: function(state) {
+      //   // operation selected
+      //   if ( state.current_operation.type && state.current_operation.type !== 'multiply row' ) {
+      //     // select an operation and select row 1 index's controls
+      //     this.querySelectorAll('matrix-row-controls').forEach( function(row, index) {
+      //       row.showSingleOperator(state.current_operation.type);
+      //       row.unhighlightOperator();
+      //       if (index === state.current_operation.row_1_index) {
+      //         row.highlightOperator(state.current_operation.type);
+      //       }
+      //     });
+      //   }
+      //   // disable all the controls except the current row for multiply row (it only operates on one row at a time)
+      //   else if (state.current_operation.type === 'multiply row') {
+      //     this.querySelectorAll('matrix-row-controls').forEach( function(row, index) {
+      //       if (index === state.current_operation.row_1_index) {
+      //         row.showSingleOperator(state.current_operation.type).highlightOperator(state.current_operation.type);
+      //       }
+      //       else {
+      //         row.disableOperators();
+      //         row.unhighlightOperator();
+      //       }
+      //     });
+      //   }
+      //   else {
+      //     this.querySelectorAll('matrix-row-controls').forEach( function(row, index) {
+      //       row.resetOperators();
+      //     });
+      //   }
+      // },
+      // 
+      // updateThreeLinesView: function(state) {
+      //   var rows = this.querySelectorAll('matrix-row-controls');
+      //   // three-lines thing clicked
+      //   if ( state.current_operation.open_operations !== null ) {
+      //     rows.forEach( function(row) {
+      //       if (row.rowIndex !== state.current_operation.open_operations) {
+      //         console.log('close');
+      //         row.closeOperationsTray();
+      //         row.currentState.operationsTrayOpen = 'poop off';
+      //       }
+      //       else {
+      //         console.log('open');
+      //         row.openOperationsTray();
+      //         row.currentState.operationsTrayOpen = 'poop on';
+      //       }
+      //     });
+      //   }
+      //   else {
+      //     rows.forEach( function(row) {
+      //       row.closeOperationsTray();
+      //       row.currentState.operationsTrayOpen = 'poop off';
+      //     });
+      //   }
+      //   
+      //   // rows.forEach( function(row, index) {
+      //   //   var highlighted = false;
+      //   //   if (index === state.current_operation.row_1_index) {
+      //   //     highlighted = true;
+      //   //   }
+      //   //   row.updateThreeLines(state.current_operation.type, highlighted);
+      //   // });
+      // },
       
       updateView: function() {
         var state = store.getState();
         
         this.updateMatrix( state.getCurrent() );
-        this.updateOperationsView(state);
-        this.updateThreeLinesView(state);
+        // this.updateOperationsView(state);
+        // this.updateThreeLinesView(state);
         
+        this.querySelectorAll('matrix-row-controls').forEach( function(row) {
+          row.updateView(state.current_operation);
+        });
+        
+        this.querySelector('matrix-controls').updateView(state.current_operation);
         
         return state.getCurrent();
       }

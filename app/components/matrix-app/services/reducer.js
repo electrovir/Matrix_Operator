@@ -134,7 +134,7 @@ function matrixAppReducer(state, action) {
   }
   
   
-  var accepted_types = ['@@redux/INIT', 'begin operation', 'undo', 'redo', 'load', 'typing input', 'add row', 'add column', 'remove row', 'remove column', 'reset to original', 'clear', 'swap rows', 'multiply row', 'add row multiple', 'open operations'];
+  var accepted_types = ['@@redux/INIT', 'begin operation', 'undo', 'redo', 'load', 'typing input', 'add row', 'add column', 'remove row', 'remove column', 'reset to original', 'clear', 'swap rows', 'multiply row', 'add row multiple', 'hamburger click', 'end operation'];
   
   function invalidAction(type, wrong_thing) {
     var text =  'Invalid action.'.concat(type).concat(' passed in dispatch');
@@ -205,34 +205,46 @@ function matrixAppReducer(state, action) {
     // ================================================
     // Operation steps
     // ================================================
-    case 'open operations':
+    //open the operation tray (only visible on mobile)
+    case 'hamburger click':
       if ( !state.current_operation.type ) {
-        if ( action.operation.row_1_index === state.current_operation.open_operations ) {
+        if ( action.index === state.current_operation.open_operations ) {
           newState.current_operation.open_operations = null;
         }
         else {
-          newState.current_operation.open_operations = action.operation.row_1_index;
+          newState.current_operation.open_operations = action.index;
         }
       }
       else {
         newState.current_operation.open_operations = null;
       }
     break;
+    
     case 'begin operation':
       // if there is no current operation taking place
       if ( !state.current_operation.type ) {
         console.warn('OPERATION BEGUN');
         newState.current_operation.row_1_index = action.operation.row_1_index;
         newState.current_operation.type = action.operation.type;
+        newState.current_operation.open_operations = null;
       }
+      
       else if ( action.operation.row_1_index !== state.current_operation.row_1_index ) {
         console.warn('OPERATION COMPLETED');
         newState.current_operation.type = null;
       }
       else if ( action.operation.row_1_index === state.current_operation.row_1_index ) {
-        console.warn('OPERATION ENDED');
+        console.warn('OPERATION CANCELED');
         newState.current_operation.type = null;
       }
+    break;
+    
+    case 'end operation':
+      newState.current_operation.type = null;
+      newState.current_operation.row_1_index = null;
+      newState.current_operation.row_2_index = null;
+      newState.current_operation.open_operations = null;
+      newState.current_operation.multiple = null;
     break;
     
     
