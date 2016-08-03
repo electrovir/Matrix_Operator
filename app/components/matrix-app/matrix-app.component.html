@@ -45,7 +45,8 @@
       properties: {
         matrix: {
           type: Array,
-          notify: true
+          notify: true,
+          value: [[{value: ""}, {value: ""}], [{value: ""}, {value: ""}]]
         },
         
       },
@@ -157,10 +158,10 @@
         // this.updateThreeLinesView(state);
         
         this.querySelectorAll('matrix-row-controls').forEach( function(row) {
-          row.updateView(state.current_operation);
+          row.updateView(state.currentOperation);
         });
         
-        this.querySelector('matrix-controls').updateView(state.current_operation);
+        // this.querySelector('matrix-controls').updateView(state.current_operation);
         
         return state.getCurrent();
       }

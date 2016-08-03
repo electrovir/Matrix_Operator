@@ -134,7 +134,7 @@ function matrixAppReducer(state, action) {
   }
   
   
-  var accepted_types = ['@@redux/INIT', 'begin operation', 'undo', 'redo', 'load', 'typing input', 'add row', 'add column', 'remove row', 'remove column', 'reset to original', 'clear', 'swap rows', 'multiply row', 'add row multiple', 'hamburger click', 'end operation'];
+  var accepted_types = ['@@redux/INIT', 'set multiple', 'operation click', 'undo', 'redo', 'load', 'typing input', 'add row', 'add column', 'remove row', 'remove column', 'reset to original', 'clear', 'swap rows', 'multiply row', 'add row multiple', 'hamburger click', 'end operation'];
   
   function invalidAction(type, wrong_thing) {
     var text =  'Invalid action.'.concat(type).concat(' passed in dispatch');
@@ -153,18 +153,18 @@ function matrixAppReducer(state, action) {
     // console.warn(action.operation);
     //   invalidAction('operation');
     // }
-    if ( action.operation.multiple && typeof action.operation.multiple !== 'number') {
-      console.warn(action.operation);
-      invalidAction('operation.multiple', operation.multiple);
-    }
-    if ( action.operation.row_1_index && typeof action.operation.row_1_index !== 'number') {
-      console.warn(action.operation);
-      invalidAction('operation.row_1_index', operation.row_1_index);
-    }
-    if ( action.operation.row_2_index && typeof action.operation.row_2_index !== 'number') {
-      console.warn(action.operation);
-      invalidAction('operation.row_2_index', operation.row_2_index);
-    }
+    // if ( action.operation.multiple && typeof action.operation.multiple !== 'number') {
+    //   console.warn(action.operation);
+    //   invalidAction('operation.multiple', operation.multiple);
+    // }
+    // if ( action.operation.row_1_index && typeof action.operation.row_1_index !== 'number') {
+    //   console.warn(action.operation);
+    //   invalidAction('operation.row_1_index', operation.row_1_index);
+    // }
+    // if ( action.operation.row_2_index && typeof action.operation.row_2_index !== 'number') {
+    //   console.warn(action.operation);
+    //   invalidAction('operation.row_2_index', operation.row_2_index);
+    // }
     
   }
   
@@ -207,44 +207,48 @@ function matrixAppReducer(state, action) {
     // ================================================
     //open the operation tray (only visible on mobile)
     case 'hamburger click':
-      if ( !state.current_operation.type ) {
-        if ( action.index === state.current_operation.open_operations ) {
-          newState.current_operation.open_operations = null;
+      if ( !state.currentOperation.type ) {
+        if ( action.index === state.currentOperation.openOperationsIndex ) {
+          newState.currentOperation.openOperationsIndex = null;
         }
         else {
-          newState.current_operation.open_operations = action.index;
+          newState.currentOperation.openOperationsIndex = action.index;
         }
       }
-      else {
-        newState.current_operation.open_operations = null;
+      else if (action.index === state.operation.rowIndex ) {
+        newState.currentOperation.openOperationsIndex = null;
+          newState.currentOperation.openOperationsIndex = null;
       }
     break;
     
-    case 'begin operation':
-      // if there is no current operation taking place
-      if ( !state.current_operation.type ) {
-        console.warn('OPERATION BEGUN');
-        newState.current_operation.row_1_index = action.operation.row_1_index;
-        newState.current_operation.type = action.operation.type;
-        newState.current_operation.open_operations = null;
-      }
-      
-      else if ( action.operation.row_1_index !== state.current_operation.row_1_index ) {
-        console.warn('OPERATION COMPLETED');
-        newState.current_operation.type = null;
-      }
-      else if ( action.operation.row_1_index === state.current_operation.row_1_index ) {
-        console.warn('OPERATION CANCELED');
-        newState.current_operation.type = null;
-      }
-    break;
+    // case 'operation click':
+    //   // if there is no current operation taking place
+    //   if ( !state.currentOperation.type ) {
+    //     console.warn('OPERATION BEGUN');
+    //     newState.currentOperation.rowIndex = action.operation.rowIndex;
+    //     newState.currentOperation.type = action.operation.type;
+    //     newState.currentOperation.openOperationsIndex = null;
+    //   }
+    //   
+    //   else if ( action.operation.rowIndex !== state.currentOperation.rowIndex ) {
+    //     console.warn('OPERATION COMPLETED');
+    //     newState.currentOperation.type = null;
+    //   }
+    //   else if ( action.operation.rowIndex === state.currentOperation.rowIndex ) {
+    //     console.warn('OPERATION CANCELED');
+    //     newState.currentOperation.type = null;
+    //   }
+    // break;
+    // 
+    // case 'end operation':
+    //   newState.currentOperation.type = null;
+    //   newState.currentOperation.rowIndex = null;
+    //   newState.currentOperation.openOperationsIndex = null;
+    //   newState.currentOperation.multiple = null;
+    // break;
     
-    case 'end operation':
-      newState.current_operation.type = null;
-      newState.current_operation.row_1_index = null;
-      newState.current_operation.row_2_index = null;
-      newState.current_operation.open_operations = null;
-      newState.current_operation.multiple = null;
+    case 'set multiple':
+      newState.currentOperation.multiple = action.multiple;
     break;
     
     
@@ -319,44 +323,82 @@ function matrixAppReducer(state, action) {
     // ================================================
 
     case 'swap rows':
-      var new_matrix = state.getCurrent();
-      
-      var temp_row = new_matrix[action.operation.row_1_index];
-      new_matrix[action.operation.row_1_index] = new_matrix[action.operation.row_2_index];
-      new_matrix[action.operation.row_2_index] = temp_row;
-      
-      addNewMoment( newState, newState.getOriginal(), new_matrix, action.operation );
+      if (state.currentOperation.rowIndex === null) {
+        newState.currentOperation.rowIndex = action.index;
+        newState.currentOperation.type = action.type;
+        newState.currentOperation.openOperationsIndex = null;
+      }
+      else if (action.index === state.currentOperation.rowIndex) {
+        newState.currentOperation.type = null;
+        newState.currentOperation.rowIndex = null;
+      }
+      else {
+        var new_matrix = state.getCurrent();
+        
+        var temp_row = new_matrix[action.index];
+        new_matrix[action.index] = new_matrix[state.currentOperation.rowIndex];
+        new_matrix[state.currentOperation.rowIndex] = temp_row;
+        
+        addNewMoment( newState, newState.getOriginal(), new_matrix, action.operation );
+        newState.currentOperation.reset();
+      }
     break;
     
     // ------------------------------------------------
     
     case 'multiply row':
-      var new_matrix = newState.getCurrent();
-      var multiple = action.operation.multiple;
-      
-      console.log('new matrix', new_matrix);
-      
-      new_matrix[action.operation.row_1_index].forEach( function(e, i, array) {
-        // e = matrixItemMultiply( e, multiple );
-        array[i] = matrixItemMultiply( e, multiple );
-      });
-      
-      console.log('new matrix after mutation', new_matrix);
-      
-      addNewMoment( newState, newState.getOriginal(), new_matrix, action.operation );
+      if (state.currentOperation.rowIndex === null) {
+        newState.currentOperation.rowIndex = action.index;
+        newState.currentOperation.type = action.type;
+        newState.currentOperation.openOperationsIndex = null;
+      }
+      else if (state.currentOperation.rowIndex === action.index) {
+        newState.currentOperation.type = null;
+        newState.currentOperation.rowIndex = null;
+      }
+      else {
+        var new_matrix = newState.getCurrent();
+        var multiple = state.currentOperation.multiple;
+        
+        console.log('new matrix', new_matrix);
+        
+        new_matrix[state.currentOperation.rowIndex].forEach( function(e, i, array) {
+          // e = matrixItemMultiply( e, multiple );
+          array[i] = matrixItemMultiply( e, multiple );
+        });
+        
+        console.log('new matrix after mutation', new_matrix);
+        
+        addNewMoment( newState, newState.getOriginal(), new_matrix, action.operation );
+        newState.currentOperation.reset();
+      }
     break;
     
     // ------------------------------------------------
     
     case 'add row multiple':
-      var new_matrix = newState.getCurrent();
-      var multiple = action.operation.multiple;
-      
-      new_matrix[action.operation.row_2_index].forEach( function(e, i, array) {
-        array[i] = matrixItemAdd( matrixItemMultiply( new_matrix[action.operation.row_1_index][i], multiple ),  e );
-      });
-      
-      addNewMoment( newState, newState.getOriginal(), new_matrix, action.operation );
+      if (state.currentOperation.rowIndex === null) {
+        newState.currentOperation.rowIndex = action.index;
+        newState.currentOperation.type = action.type;
+        newState.currentOperation.openOperationsIndex = null;
+      }
+      else if (action.index === state.currentOperation.rowIndex) {
+        newState.currentOperation.reset();
+      }
+      else {
+        var new_matrix = newState.getCurrent();
+        var multiple = action.multiple;
+        if (multiple !== 0 && !multiple) {
+          multiple = 1;
+        }
+        
+        new_matrix[action.index].forEach( function(e, i, array) {
+          array[i] = matrixItemAdd( matrixItemMultiply( new_matrix[state.currentOperation.rowIndex][i], multiple ),  e );
+        });
+        
+        addNewMoment( newState, newState.getOriginal(), new_matrix, action.operation );
+        newState.currentOperation.reset();
+      }
     break;
     
     
@@ -368,7 +410,7 @@ function matrixAppReducer(state, action) {
       newState = {
         timeline: [],               // array of moments
         index: -1,                  // index of current moment
-        start_index: 0,             // this is needed to know at what index to start on after loading a timeline from local storage
+        startIndex: 0,             // this is needed to know at what index to start on after loading a timeline from local storage
         // NOTE: using JSON stuff here to get deep copies easily (object.assign don't do deep copies)
         getCurrent: function() {
           return JSON.parse( JSON.stringify( this.timeline[this.index].current_matrix ) );
@@ -376,12 +418,17 @@ function matrixAppReducer(state, action) {
         getOriginal: function() {
           return JSON.parse( JSON.stringify( this.timeline[this.index].original_matrix ) );
         },
-        current_operation: {
+        currentOperation: {
           type: null,
-          open_operations: null,
-          row1_index: null,
-          row2_index: null,
-          multiple: null
+          openOperationsIndex: null,
+          rowIndex: null,
+          multiple: null,
+          reset: function() {
+            this.type = null;
+            this.openOperationsIndex = null;
+            this.rowIndex = null;
+            this.multiple = null;
+          }
         }
       };
       
@@ -390,6 +437,6 @@ function matrixAppReducer(state, action) {
     break;
   }
   // ------------------------------------------------
-  console.log( 'index: '.concat( String(newState.index) ), 'timeline:', newState.timeline, 'action: ', action, 'current operation: ', newState.current_operation );
+  console.log( 'index: '.concat( String(newState.index) ), 'timeline:', newState.timeline, 'action: ', action, 'current operation: ', newState.currentOperation );
   return newState;
 }

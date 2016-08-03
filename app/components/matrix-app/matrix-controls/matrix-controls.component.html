@@ -1,7 +1,7 @@
 <link rel="import" href="../../../../bower_components/polymer/polymer.html">
 
 <dom-module id="matrix-controls">
-  <style>
+  <!-- <style>
     :host {
       display: flex;
       flex-direction: column;
@@ -110,9 +110,55 @@
     }
     
     
+  </style> -->
+  <style>
+    .multiple-entry {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      /*background-color: hsla(0, 0%, 0%, .9);*/
+      transition: visibility 0 ease-in-out, opacity .2s ease-in-out;
+    }
+    .multiple-entry input {
+      flex-grow: 1;
+      width: 200px;
+      max-width: 90%;
+    }
+    .multiple-entry form {
+      padding: 10px;
+      display: flex;
+      flex-grow: 1;
+      flex-direction: column;
+      align-items: center;
+    }
+    .multiple-entry.hidden-multiple {
+      z-index: -50;
+      visibility: hidden;
+      opacity: 0;
+    }
+    .multiple-entry.shown-multiple {
+      z-index: 99;
+      visibility: visible;
+      opacity: 1;
+    }
+    
+    .shown-multiple ~ div {
+      transition: opacity .2s ease-in-out;
+      opacity: .07;
+    }
+    /*.multiple-entry ~ .control-row > div {
+      color: purple;
+    }*/
   </style>
   <template>
-    
+    <div id="multiple-entry" class="multiple-entry hidden-multiple">
+      <form action="dothing();" onsubmit="dothing();">
+        <input oninput="console.log();" id="multiple-input" placeholder="Multiple">
+      </form>
+    </div>
     
     <div class="control-row">
       <div onclick="store.dispatch( {type: 'undo'} )">
@@ -159,7 +205,14 @@
   
   <script>
   Polymer ({
-    is: 'matrix-controls'
+    is: 'matrix-controls',
+    attached: function() {
+      this.querySelector('#multiple-input').addEventListener('input', function(event) {
+        event.stopPropagation();
+        
+        store.dispatch({type: 'set multiple', multiple: event.target.value});
+      }, false)
+    }
   });
   
   </script>

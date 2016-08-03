@@ -148,16 +148,17 @@
       }
       
       .disabled_operation {
-      background: linear-gradient(to bottom, hsla(240, 30%, 10%, 0.4), hsla(240, 100%, 2%, 0.4) );
-      
-      cursor: default;
-      
-      border: 2px solid hsla(240, 10%, 80%, 1);
+        background: linear-gradient(to bottom, hsla(240, 30%, 10%, 0.4), hsla(240, 100%, 2%, 0.4) );
+        
+        cursor: default;
+        
+        border: 2px solid hsla(240, 10%, 80%, 1);
       }
       
-      .disabled_operation svg {
+      .disabled_operation .operation {
         transition: all .3s ease-in-out;
         opacity: 0;
+        visibility: hidden;
       }
       
       .hidden {
@@ -226,7 +227,7 @@
       
     </style>
     
-    <div class="three-lines" onclick="this.parentNode.dispatchThreeLines(this);">
+    <div class="three-lines" onclick="this.parentNode.dispatchHamburger(this);">
       <svg class="hamburger" xmlns="http://www.w3.org/2000/svg" width="46.123" height="36.063" viewBox="0 0 46.123 36.063"><path d="M46.123 3.606c0 1.992-1.355 3.606-3.026 3.606H3.026C1.355 7.213 0 5.599 0 3.606 0 1.615 1.355 0 3.026 0h40.07c1.672 0 3.027 1.615 3.027 3.606zm0 14.426c0 1.992-1.355 3.606-3.026 3.606H3.026C1.355 21.639 0 20.024 0 18.032c0-1.992 1.355-3.606 3.026-3.606h40.07c1.672 0 3.027 1.614 3.027 3.606zm0 14.426c0 1.991-1.355 3.605-3.026 3.605H3.026C1.355 36.063 0 34.449 0 32.458c0-1.992 1.355-3.606 3.026-3.606h40.07c1.672 0 3.027 1.614 3.027 3.606z"/></svg>
       <svg name="swap" class="inner-swap-rows arrow-svg hidden inner-operation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.75 54.966"><path d="M13.481 37.591h5.263c.769 0 1.254.857.872 1.52-2.957 5.122-5.913 10.243-8.869 15.364-.378.654-1.366.654-1.744 0C6.046 49.354 3.09 44.232.133 39.11c-.383-.662.104-1.52.872-1.52h5.266L6.27 17.374l-5.265-.001c-.769 0-1.255-.857-.872-1.52C3.09 10.733 6.046 5.612 9.002.491c.378-.655 1.365-.655 1.744 0l8.871 15.363c.382.663-.104 1.52-.872 1.52H13.48v20.217z"/></svg>
       <svg name="multiply" class="inner-multiply-row cross-svg hidden inner-operation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40.523 40.523"><path d="M39.729 34.414L25.36 20.229 39.549 5.855c1.174-1.191.975-3.29-.445-4.688-1.418-1.397-3.52-1.563-4.693-.372L20.229 15.163 5.855.973C4.664-.2 2.565 0 1.167 1.419-.23 2.837-.396 4.938.795 6.112l14.367 14.183L.972 34.67c-1.172 1.189-.973 3.287.445 4.685 1.42 1.397 3.521 1.564 4.692.375l14.186-14.369 14.375 14.19c1.189 1.172 3.287.973 4.684-.445 1.398-1.42 1.564-3.522.375-4.692z"/></svg>
@@ -255,68 +256,145 @@
       properties: {
         rowIndex: {
           type: Number
+        },
+        lastOperation: {
+          type: Object
         }
       },
       
       updateView: function(operation) {
+        function closeOperationsTray(view) {
+          var tray = view.querySelector('.operations');
+          if ( tray.classList.contains('expanded') && !tray.classList.contains('contracted') ) {
+            tray.classList.add('contracted');
+            tray.classList.remove('expanded');
+          }
+          return view;
+        }
         
+        function openOperationsTray(view) {
+          var element = view.querySelector('.operations');
+          if ( element.classList.contains('contracted') || !element.classList.contains('expanded') ) {
+            element.classList.remove('contracted');
+            element.classList.add('expanded');
+          }
+          return view;
+        }
+        
+        function showSingleOperator(view, type) {
+          resetOperators(view);
+          if (type) {
+            type = type.replace(/\s/g, '-');
+          }
+          
+          var keep = view.querySelector( '.'.concat(type) );
+          view.querySelectorAll('.operation').forEach( function(element) {
+            if (element !== keep) {
+              element.style.flexGrow = 0;
+              element.style.padding = 0;
+              element.style.borderWidth = 0;
+            }
+          });
+          
+          
+          return view;
+        }
+        
+        function highlightOperator(view, type) {
+          type = type.replace(/\s/g, '-');
+          view.querySelector( '.'.concat(type) ).classList.add('selected');
+          return view;
+        }
+        
+        function disableOperators(view) {
+          view.querySelector('.operations').classList.add('disabled_operation');
+          return view;
+        }
+        
+        function resetOperators(view) {
+          var remove_classes = [
+            'selected',
+            'disabled_operation'
+          ];
+          
+          remove_classes.forEach( function(current_class) {
+            var nodes = view.querySelectorAll( '.'.concat(current_class) );
+            if (nodes.length > 0) {
+              nodes.forEach( function(element) {
+                element.classList.remove(current_class);
+              });
+            }
+          });
+          
+          view.querySelectorAll('.operation').forEach( function(element) {
+            element.removeAttribute('style');
+          });
+          return view;
+        }
+        
+        function updateHamburger(view, operation, highlight) {
+          var threeLines = view.querySelector('.three-lines');
+          if (operation) {
+            threeLines.querySelector('.hamburger').classList.add('hidden');
+            threeLines.querySelector( '.inner-'.concat(operation.replace(/\s/g, '-')) ).classList.remove('hidden');
+            if (highlight) {
+              threeLines.classList.add('selected');
+            }
+          }
+          else {
+            threeLines.querySelector('.hamburger').classList.remove('hidden');
+            threeLines.querySelectorAll('.inner-operation').forEach( function(element) {
+              element.classList.add('hidden');
+            });
+          }
+        }
+        // ===============================
+        // UPDATE VIEW EXECUTION
+        // ===============================
+        
+        //
+        // operations tray open/close
+        if (operation.openOperationsIndex === null || operation.openOperationsIndex != this.rowIndex) {
+          closeOperationsTray(this);
+        }
+        else if (operation.openOperationsIndex === this.rowIndex) {
+          openOperationsTray(this);
+        }
+        
+        //
+        // operation selection
+        if (operation.type === null) {
+          resetOperators(this);
+        }
+        else if (operation.type === 'multiply row' && operation.rowIndex !== this.rowIndex) {
+          disableOperators(this);
+        }
+        else {
+          showSingleOperator(this, operation.type);
+          if (operation.rowIndex === this.rowIndex) {
+            highlightOperator(this, operation.type);
+          }
+        }
+        
+        updateHamburger(this, operation.type, (operation.rowIndex === this.rowIndex));
+        this.lastOperation = operation;
       },
       
       dispatchOperation: function(element) {
-        // store.dispatch( {type: 'operation click', operation: { type: element.getAttribute('operation'), row_1_index: this.rowIndex } } );
+        store.dispatch( {type: element.getAttribute('operation'), index: this.rowIndex } );
         
-        action('operation click', { operation: element.getAttribute('operation'), index: this.rowIndex} );
+        // action('operation click', { operation: element.getAttribute('operation'), index: this.rowIndex} );
       },
       
-      dispatchThreeLines: function(element) {
-        // store.dispatch( { type: 'open operations', operation: { row_1_index: this.parentNode.parentNode.rowIndex } } );
-        // var state = store.getState();
-        // if (state.current_operation.type === null) {
-        //   store.dispatch( { type: 'open operations', operation: { row_1_index: this.rowIndex } } );
-        // }
-        // else {
-        //   store.dispatch( {type: 'operation click', operation: {  } );
-        // }
-        
-        action('three lines click', { index: this.rowIndex } );
-      },
-      
-      test: function() {
-        console.warn('TEST FIRED');
-      },
-      
-      showSingleOperator: function (operation) {
-        if (typeof operation !== 'string') {
-          throw new Error('Invalid operation passed.');
+      dispatchHamburger: function(element) {
+        console.log(this.lastOperation);
+        if (!this.lastOperation.type) {
+          store.dispatch( {type: 'hamburger click', index: this.rowIndex} );
         }
-        this.resetOperators();
-        operation = operation.replace(/\s/g, '-');
+        else {
+          store.dispatch( {type: this.lastOperation.type, index: this.rowIndex} );
+        }
         
-        this.classList.remove('disabled_operation');
-        var keep = this.querySelector( '.'.concat(operation) );
-        this.querySelectorAll('.operation').forEach( function(element) {
-          if (element !== keep) {
-            element.style.flexGrow = 0;
-            element.style.padding = 0;
-            element.style.borderWidth = 0;
-          }
-        });
-        return this;
-      },
-      
-      disableOperators: function() {
-        this.showSingleOperator('gibberish');
-        this.querySelector('.operations').classList.add('disabled_operation');
-        return this;
-      },
-      
-      highlightOperator: function(operation) {
-        operation = operation.replace(/\s/g, '-');
-        this.querySelector( '.'.concat(operation) ).classList.add('selected');
-        // if (disableClick) {
-        //   this.querySelector('.operations').classList.add('default_cursor');
-        // }
-        return this;
       },
       
       unhighlightOperator: function() {
@@ -325,65 +403,6 @@
           selected.classList.remove('selected');
         }
         return this;
-      },
-      
-      resetOperators: function() {
-        var remove_classes = [
-          'selected',
-          'disabled_operation'
-        ];
-        var parent = this;
-        
-        remove_classes.forEach( function(current_class) {
-          var nodes = parent.querySelectorAll( '.'.concat(current_class) );
-          if (nodes.length > 0) {
-            nodes.forEach( function(element) {
-              element.classList.remove(current_class);
-            });
-          }
-        });
-        
-        this.querySelectorAll('.operation').forEach( function(element) {
-          element.removeAttribute('style');
-        });
-        return this;
-      },
-      
-      closeOperationsTray: function() {
-        var tray = this.querySelector('.operations');
-        if ( tray.classList.contains('expanded') && !tray.classList.contains('contracted') ) {
-          tray.classList.add('contracted');
-        }
-      },
-      
-      updateThreeLines: function(operation, highlight) {
-        var threeLines = this.querySelector('.three-lines');
-        if (operation) {
-          threeLines.querySelector('.hamburger').classList.add('hidden');
-          threeLines.querySelector( '.inner-'.concat(operation.replace(/\s/g, '-')) ).classList.remove('hidden');
-          if (highlight) {
-            threeLines.classList.add('selected');
-          }
-        }
-        else {
-          threeLines.querySelector('.hamburger').classList.remove('hidden');
-          threeLines.querySelectorAll('.inner-operation').forEach( function(element) {
-            element.classList.add('hidden');
-          });
-        }
-      },
-      
-      openOperationsTray: function() {
-        var element = this.querySelector('.operations');
-        if ( element.classList.contains('contracted') || !element.classList.contains('expanded') ) {
-          element.classList.remove('contracted');
-          element.classList.add('expanded');
-          console.log('show');
-        }
-        // else {
-        //   element.classList.add('contracted');
-        //   console.log('hide');
-        // }
       },
 
       handleTap: function(event) {
