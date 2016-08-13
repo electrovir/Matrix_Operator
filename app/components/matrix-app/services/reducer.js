@@ -136,6 +136,8 @@ function matrixAppReducer(state, action) {
   
   var accepted_types = ['@@redux/INIT', 'set multiple', 'operation click', 'undo', 'redo', 'load', 'typing input', 'add row', 'add column', 'remove row', 'remove column', 'reset to original', 'clear', 'swap rows', 'multiply row', 'add row multiple', 'hamburger click', 'end operation'];
   
+  // var accepted_operation_types = ['swap rows', 'add row multiple', 'multiply row'];
+  
   function invalidAction(type, wrong_thing) {
     var text =  'Invalid action.'.concat(type).concat(' passed in dispatch');
     if (wrong_thing) {
@@ -148,25 +150,7 @@ function matrixAppReducer(state, action) {
     invalidAction('type', action.type);
   }
   
-  if ( action.operation ) {
-    // if ( !action.operation.multiple && !action.operation.row_1_index && !action.operation.row_2_index) {
-    // console.warn(action.operation);
-    //   invalidAction('operation');
-    // }
-    // if ( action.operation.multiple && typeof action.operation.multiple !== 'number') {
-    //   console.warn(action.operation);
-    //   invalidAction('operation.multiple', operation.multiple);
-    // }
-    // if ( action.operation.row_1_index && typeof action.operation.row_1_index !== 'number') {
-    //   console.warn(action.operation);
-    //   invalidAction('operation.row_1_index', operation.row_1_index);
-    // }
-    // if ( action.operation.row_2_index && typeof action.operation.row_2_index !== 'number') {
-    //   console.warn(action.operation);
-    //   invalidAction('operation.row_2_index', operation.row_2_index);
-    // }
-    
-  }
+  
   
   switch( action.type ) {
   
@@ -221,31 +205,6 @@ function matrixAppReducer(state, action) {
       }
     break;
     
-    // case 'operation click':
-    //   // if there is no current operation taking place
-    //   if ( !state.currentOperation.type ) {
-    //     console.warn('OPERATION BEGUN');
-    //     newState.currentOperation.rowIndex = action.operation.rowIndex;
-    //     newState.currentOperation.type = action.operation.type;
-    //     newState.currentOperation.openOperationsIndex = null;
-    //   }
-    //   
-    //   else if ( action.operation.rowIndex !== state.currentOperation.rowIndex ) {
-    //     console.warn('OPERATION COMPLETED');
-    //     newState.currentOperation.type = null;
-    //   }
-    //   else if ( action.operation.rowIndex === state.currentOperation.rowIndex ) {
-    //     console.warn('OPERATION CANCELED');
-    //     newState.currentOperation.type = null;
-    //   }
-    // break;
-    // 
-    // case 'end operation':
-    //   newState.currentOperation.type = null;
-    //   newState.currentOperation.rowIndex = null;
-    //   newState.currentOperation.openOperationsIndex = null;
-    //   newState.currentOperation.multiple = null;
-    // break;
     
     case 'set multiple':
       newState.currentOperation.multiple = action.multiple;

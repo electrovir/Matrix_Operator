@@ -377,7 +377,7 @@
         }
         
         updateHamburger(this, operation.type, (operation.rowIndex === this.rowIndex));
-        this.lastOperation = operation;
+        this.lastOperation = Object.assign({}, operation);
       },
       
       dispatchOperation: function(element) {
@@ -387,7 +387,7 @@
       },
       
       dispatchHamburger: function(element) {
-        console.log(this.lastOperation);
+        console.dir(this);
         if (!this.lastOperation.type) {
           store.dispatch( {type: 'hamburger click', index: this.rowIndex} );
         }

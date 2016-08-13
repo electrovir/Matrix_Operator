@@ -24,7 +24,7 @@
           </matrix-row-controls>
           
           <template is="dom-repeat" items="{{item}}" as="cell">
-            <input value="{{cell.value::input}}">
+            <input type="number" value="{{cell.value::input}}">
           </template>
           
         </matrix-row>
@@ -154,12 +154,12 @@
         var state = store.getState();
         
         this.updateMatrix( state.getCurrent() );
-        // this.updateOperationsView(state);
-        // this.updateThreeLinesView(state);
         
         this.querySelectorAll('matrix-row-controls').forEach( function(row) {
           row.updateView(state.currentOperation);
         });
+        
+        this.querySelector('matrix-controls').updateView(state.currentOperation);
         
         // this.querySelector('matrix-controls').updateView(state.current_operation);
         
@@ -170,6 +170,10 @@
       
       
     });
+    
+    if (!NodeList.prototype.forEach) {
+      NodeList.prototype.forEach = Array.prototype.forEach;
+    }
     
   </script>
 
