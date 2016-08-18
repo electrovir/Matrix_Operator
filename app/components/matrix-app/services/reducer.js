@@ -274,7 +274,18 @@ function matrixAppReducer(state, action) {
     
     case 'clear':
       var current_matrix = state.getCurrent();
-      addNewMoment( newState, createBlankMatrix(current_matrix.length, current_matrix[0].length) );
+      // var isMatrixBlank = !current_matrix.some(function(row) {
+      //   return row.some(function(cell) {
+      //     return cell !== '';
+      //   });
+      // });
+      // 
+      // if (!isMatrixBlank && confirm('You clicked clear. Are you sure you want to clear your matrix?')
+      // ) {
+      // NOTE: don't need to alert user upon clicking clear because of the undo button
+      //       they can easily undo the clear if they did not intend to click it
+        addNewMoment( newState, createBlankMatrix(current_matrix.length, current_matrix[0].length) );
+      // }
     break;
     
     // ================================================
@@ -346,7 +357,8 @@ function matrixAppReducer(state, action) {
       }
       else {
         var new_matrix = newState.getCurrent();
-        var multiple = action.multiple;
+        var multiple = state.currentOperation.multiple;
+        console.log('multiple', multiple);
         if (multiple !== 0 && !multiple) {
           multiple = 1;
         }

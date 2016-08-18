@@ -133,7 +133,13 @@
     },
     
     formAction: function() {
-      console.log(this);
+      var operation = this.lastOperation.type;
+      if (operation === 'multiply row') {
+        store.dispatch({ type: 'multiply row' });
+      }
+      else if (operation === 'add row multiple') {
+        
+      }
     },
     
     updateView: function(currentOperation) {
@@ -154,9 +160,13 @@
           
         }
       }
-      console.log('matrix controls update view: ', currentOperation);
+      // console.log('matrix controls update view: ', currentOperation);
+      if (!currentOperation.multiple) {
+        this.querySelector('#multiple-input').value = '';
+      }
       
       this.lastOperation = Object.assign({}, currentOperation);
+      
     }
   });
   
