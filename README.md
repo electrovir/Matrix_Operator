@@ -5,9 +5,11 @@
 * Allows the user to perform row operations on an input matrix
 * Allows resizing of that matrix without data loss
 * All operations work with fractions
+* Responsive!
 
 #### Features to add:
 
+* Re-implement fractions
 * Variable support
 * Keyboard shortcuts
 * Even better support for tab keying
