@@ -1,0 +1,208 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../matrix-row-controls/matrix-row-controls.component.html">
+
+<dom-module id="matrix-row">
+  <style>
+    :host { 
+      display: flex;
+      flex-direction: row;
+    }
+    input {
+      transition: font-size 0.05s ease-in-out;
+      transition: border 0.1s ease-in-out, box-shadow 0.3s ease-in-out;
+      
+      margin: 5px;
+      padding: 2px;
+      width: 150px;
+      
+      text-align: center;
+      font-size: 2.5em;
+      
+      outline: none;
+      -webkit-appearance: none;
+      
+      border-radius: 2px;
+      box-sizing: border-box;
+      border: 2px solid hsl(0, 0%, 82%);
+    }
+    input:focus {
+      border: 2px solid hsl(195, 80%, 70%);
+      box-shadow: 0 0 4px 0 hsl(195, 80%, 70%) inset;
+    }
+    
+    matrix-row-controls {
+      position: -webkit-sticky;
+      position: -moz-sticky;
+      position: -o-sticky;
+      position: -ms-sticky;
+      position: sticky;
+      
+      margin: 5px;
+      margin-left: 10px;
+      left: 5px;
+      
+      align-self: center;
+    }
+    
+    @media (max-width: 800px), (max-height: 600px) {
+      input {
+        width: 80px;
+        flex-grow: 1;
+        flex-basis: 50px;
+        /*min-width: 60px;*/
+        flex-shrink: 1;
+      }
+      .blocked {
+        pointer-events: none;
+        z-index: -1;
+      }
+    }
+    
+  </style>
+  
+  <script>
+    Polymer ({
+      is: 'matrix-row',
+      listeners: {
+        // input: 'resizeInput'
+      },
+      properties: {
+        rowData: {
+          type: Array,
+          notify: true
+        },
+        rowIndex: {
+          type: Number
+        }
+      },
+      
+      attached: function() {
+        GLOBAL_DEBUG.this = this;
+        this.myList = [
+          'herp',
+          'derp',
+          'meep'
+        ];
+        var that = this;
+        // this.rowData = ['a','a','a'];
+        // this.thingie = { herp: 'derp', zero: '0'};
+        // this.thingie = ['array0', 'array1' ];
+        
+        function resizeAllInputs() {
+          Polymer.dom(that.root).querySelectorAll('input').forEach( function(element) {
+            that.resizeInput(element);
+          });
+        }
+        
+        resizeAllInputs();
+        
+        window.addEventListener('resize', function() {
+          // console.log('resize!');
+          resizeAllInputs();
+        });
+        // console.log(document.getElementsByTagName('input')[0]);
+      },
+      
+      resizeInput: function(element) {
+        
+        function getSpecs (current_element, subtract) {
+          var specs =  {
+            height: current_element.clientHeight,
+            width: current_element.clientWidth,
+            font_family: window.getComputedStyle(element).getPropertyValue('font-family'),
+            font_size: Number( window.getComputedStyle(current_element).getPropertyValue('font-size').replace(/px/, '') ),
+            text: current_element.value,
+            subtract: subtract
+          };
+          specs.max_height = specs.height - subtract;
+          specs.max_width = specs.width - subtract;
+          
+          
+          return specs;
+        }
+        
+        function isFontSmallEnough ( specs, test_font_size ) {
+          // console.log('small enough?', getTextWidth( specs, test_font_size ),  start_specs.max_width, specs.font_size, specs.max_height);
+          return getTextWidth( specs, test_font_size ) <= start_specs.max_width && specs.font_size <= specs.max_height;
+        }
+        
+        function isInputUnchanged( specs, current_element ) {
+          var current_specs = getSpecs(current_element, spects.subtract);
+          return current_specs === specs;
+        }
+        
+        function isFontTooSmall ( specs, test_font_size, margin ) {
+          return isFontSmallEnough( specs, test_font_size ) && getTextWidth(specs, test_font_size) < specs.max_width - margin && test_font_size < specs.max_height - margin;
+        }
+        
+        /**
+         * Uses canvas.measureText to compute and return the width of the given text of given font in pixels.
+         * 
+         * @param text The text to be rendered.
+         * @param {String} font The css font descriptor that text is to be rendered with (e.g. "14px verdana").
+         * 
+         * @see http://stackoverflow.com/questions/118241/calculate-text-width-with-javascript/21015393#21015393
+         * (getTextWidth("hello there!", "bold 12pt arial"));  // close to 86
+         */
+        function getTextWidth(specs, font_size) {
+            // if given, use cached canvas for better performance
+            // else, create new canvas
+            var text = specs.text;
+            if (text === '') {
+              text = '.';
+            }
+            var font = String(font_size).concat('px ', specs.font_family );
+            // console.log('stuff:', text, font);
+            var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
+            var context = canvas.getContext("2d");
+            context.font = font;
+            var metrics = context.measureText(text);
+            // console.log('width:', metrics.width);
+            return metrics.width;
+        }
+        
+        //
+        // EXECUTION
+        //
+        if (element.target) {
+          element = element.target;
+          if ( element.tagName !== 'INPUT') {
+            return false;
+          }
+        }
+        var INC = 1;
+        var MIN_SIZE = 12;
+        var MARGIN = 20;
+        var start_specs = getSpecs(element, MARGIN);
+        var new_font_size = start_specs.font_size;
+        
+        // console.log(start_specs);
+        
+        if ( !isFontSmallEnough( start_specs, start_specs.font_size ) ) {
+          // console.log('too big!: ' + start_specs.font_size);
+          while ( !isFontSmallEnough( start_specs, new_font_size ) && new_font_size > MIN_SIZE ) {
+            new_font_size -= INC;
+          }
+          if ( new_font_size <= MIN_SIZE ) {
+            element.style.wordBreak = "break-word";
+            element.style.wordWrap = "break-word";
+          }
+        }
+        else if ( isFontTooSmall( start_specs, start_specs.font_size, MARGIN ) ) {
+          while ( isFontTooSmall( start_specs, new_font_size, MARGIN ) ) {
+            new_font_size += INC;
+          }
+          element.style.wordBreak = '';
+          element.style.wordWrap = '';
+        }
+        // console.log('new size', new_font_size);
+        if ( isInputUnchanged ) {
+          element.style.fontSize = String(new_font_size).concat('px');
+        }
+        
+        
+      } // end resizeInput
+    });
+  </script>
+  
+</dom-module>

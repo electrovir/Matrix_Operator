@@ -1,0 +1,28 @@
+{
+  "name": "matrix_operator",
+  "version": "2.0.0",
+  "description": "A gui for performing matrix operations.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/electrovir/Matrix_Operator.git"
+  },
+  "keywords": [
+    "matrix",
+    "math",
+    "linear",
+    "algebra"
+  ],
+  "author": "electrovir",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/electrovir/Matrix_Operator/issues"
+  },
+  "homepage": "https://github.com/electrovir/Matrix_Operator#readme",
+  "dependencies": {
+    "redux": "^3.5.2"
+  }
+}

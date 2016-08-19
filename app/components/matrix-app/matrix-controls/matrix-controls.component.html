@@ -1,0 +1,182 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+
+<dom-module id="matrix-controls">
+  <style>
+    .multiple-entry {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      /*visibility: hidden;*/
+      /*background-color: hsla(0, 0%, 0%, .9);*/
+      transition: opacity .35s ease-in-out;
+    }
+    .multiple-entry input {
+      flex-grow: 1;
+      width: 200px;
+      max-width: 90%;
+    }
+    .multiple-entry form {
+      padding: 10px;
+      display: flex;
+      flex-grow: 1;
+      flex-direction: column;
+      align-items: center;
+    }
+    .multiple-entry.hidden-multiple {
+      z-index: -50;
+      /*visibility: hidden;*/
+      opacity: 0;
+    }
+    .multiple-entry.shown-multiple {
+      z-index: 99;
+      visibility: visible;
+      opacity: 1;
+    }
+    
+    .multiple-entry ~ div {
+      transition: opacity .2s ease-in-out;  
+    }
+    .shown-multiple ~ div {
+      opacity: .07;
+    }
+    .disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+    
+    /*.multiple-entry ~ .control-row > div {
+      color: purple;
+    }*/
+  </style>
+  <template>
+    <div id="multiple-input-wrapper" class="multiple-entry hidden-multiple">
+      <form action="javascript:document.querySelector('matrix-controls').formAction();">
+        <input type="number" oninput="console.log();" id="multiple-input" placeholder="Multiple">
+      </form>
+    </div>
+    
+    <div class="control-row">
+      <div onclick="store.dispatch( {type: 'undo'} )">
+        Undo
+      </div>
+      <div class="disabled">
+        Check
+      </div>
+      <div onclick="store.dispatch( {type: 'redo'} )">
+        Redo
+      </div>
+    </div>
+    
+    <div class="control-row">
+      <div onclick="store.dispatch( {type: 'add row'} )">
+        + Row
+      </div>
+      <div onclick="store.dispatch( {type: 'add column'} )">
+        + Col
+      </div>
+    </div>
+    
+    <div class="control-row">
+      <div onclick="store.dispatch( {type: 'remove row'} )">
+        - Row
+      </div>
+      <div onclick="store.dispatch( {type: 'remove column'} )">
+        - Col
+      </div>
+    </div>
+    
+    <div class="control-row">
+      <div class="disabled" onclick="store.dispatch( {type: 'help'} )">
+        Help
+      </div>
+      <div onclick="store.dispatch( {type: 'reset to original'} )">
+        Reset
+      </div>
+      <div onclick="store.dispatch( {type: 'clear'} )">
+        Clear
+      </div>
+    </div>
+  </template>
+  
+  <script>
+  Polymer ({
+    is: 'matrix-controls',
+    
+    properties: {
+      lastOperation: {
+        type: Object
+      }
+    },
+    
+    attached: function() {
+      this.querySelector('#multiple-input').addEventListener('input', function(event) {
+        event.stopPropagation();
+        
+        store.dispatch({type: 'set multiple', multiple: event.target.value});
+      }, false);
+      this.querySelector('#multiple-input-wrapper').addEventListener('action', function(event) {
+        console.log('action fired!');
+      }, false);
+    },
+    
+    showMultiple: function() {
+      var multipleInput = this.querySelector('#multiple-input-wrapper');
+      multipleInput.classList.remove('hidden-multiple');
+      multipleInput.classList.add('shown-multiple');
+      this.querySelector('#multiple-input').focus();
+      return multipleInput;
+      
+    },
+    
+    hideMultiple: function() {
+      var multipleInput = this.querySelector('#multiple-input-wrapper');
+      multipleInput.classList.remove('shown-multiple');
+      multipleInput.classList.add('hidden-multiple');
+      this.querySelector('#multiple-input').blur();
+      return multipleInput;
+    },
+    
+    formAction: function() {
+      var operation = this.lastOperation.type;
+      if (operation === 'multiply row') {
+        store.dispatch({ type: 'multiply row' });
+      }
+      else if (operation === 'add row multiple') {
+        
+      }
+    },
+    
+    updateView: function(currentOperation) {
+      console.log('last', this.lastOperation, 'current', currentOperation);
+      if (this.lastOperation && currentOperation.type !== this.lastOperation.type) {
+        switch (currentOperation.type) {
+          case 'multiply row':
+            this.showMultiple();
+          break;
+          
+          case 'add row multiple':
+            this.showMultiple();
+          break;
+          
+          default:
+            this.hideMultiple();
+          break;
+          
+        }
+      }
+      // console.log('matrix controls update view: ', currentOperation);
+      if (!currentOperation.multiple) {
+        this.querySelector('#multiple-input').value = '';
+      }
+      
+      this.lastOperation = Object.assign({}, currentOperation);
+      
+    }
+  });
+  
+  </script>
+  
+</dom-module>

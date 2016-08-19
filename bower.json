@@ -1,0 +1,25 @@
+{
+  "name": "Matrix_Operator",
+  "version": "2.0.0",
+  "authors": [
+    "electrovir <electrovir@icloud.com>"
+  ],
+  "description": "A gui for performing matrix operations.",
+  "main": "index.html",
+  "keywords": [
+    "matrix",
+    "math",
+    "linear",
+    "algebra"
+  ],
+  "license": "MIT",
+  "homepage": "electrovir.github.io/Matrix_Operator",
+  "ignore": [
+    "**/.*",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~1.4.0"
+  }
+}
