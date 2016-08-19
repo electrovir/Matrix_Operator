@@ -135,6 +135,7 @@
       var multipleInput = this.querySelector('#multiple-input-wrapper');
       multipleInput.classList.remove('shown-multiple');
       multipleInput.classList.add('hidden-multiple');
+      this.querySelector('#multiple-input').blur();
       return multipleInput;
     },
     
