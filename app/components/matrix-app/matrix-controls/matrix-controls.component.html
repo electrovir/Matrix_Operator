@@ -42,6 +42,11 @@
     .shown-multiple ~ div {
       opacity: .07;
     }
+    .disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+    
     /*.multiple-entry ~ .control-row > div {
       color: purple;
     }*/
@@ -57,7 +62,7 @@
       <div onclick="store.dispatch( {type: 'undo'} )">
         Undo
       </div>
-      <div>
+      <div class="disabled">
         Check
       </div>
       <div onclick="store.dispatch( {type: 'redo'} )">
@@ -84,7 +89,7 @@
     </div>
     
     <div class="control-row">
-      <div onclick="store.dispatch( {type: 'help'} )">
+      <div class="disabled" onclick="store.dispatch( {type: 'help'} )">
         Help
       </div>
       <div onclick="store.dispatch( {type: 'reset to original'} )">
@@ -121,6 +126,7 @@
       var multipleInput = this.querySelector('#multiple-input-wrapper');
       multipleInput.classList.remove('hidden-multiple');
       multipleInput.classList.add('shown-multiple');
+      this.querySelector('#multiple-input').focus();
       return multipleInput;
       
     },
